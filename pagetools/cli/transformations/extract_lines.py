@@ -1,4 +1,4 @@
-from pagetools.src.utils import filesystem, img_processing
+from pagetools.src.utils import filesystem
 from pagetools.src.Extractor import TextLineExtractor
 
 import click
