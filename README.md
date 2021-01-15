@@ -2,13 +2,14 @@
 Small collection of [PAGE XML](https://github.com/PRImA-Research-Lab/PAGE-XML) related Python scripts.
 
 ## Installing
-### pip
+### Installation using pip
+The suggested method is to install `pagetools` into a virtual environment using pip:
 ```bash
 python -m venv VENV_NAME
 source VENV_NAME/bin/activate
 pip install pagetools
 ```
-
+To install the package from its source, clone this repository and run
 ```bash
 pip install pagetools
 ```
