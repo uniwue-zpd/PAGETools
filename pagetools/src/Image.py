@@ -67,12 +67,10 @@ class ProcessedImage(Image):
         :param padding:
         :return:
         """
-        _img = self.img
-
         rect = cv2.boundingRect(shape)
         x, y, w, h = rect
 
-        cropped = _img[y:y + h, x:x + w].copy()
+        cropped = self.img[y:y + h, x:x + w].copy()
         pts = shape - shape.min(axis=0)
 
         mask = np.zeros(cropped.shape[:2], np.uint8)
