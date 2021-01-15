@@ -23,7 +23,7 @@ class Image:
         return cv2.imread(str(img))
 
     def get_image(self) -> np.array:
-        """Returns numpy array representation of image
+        """Returns the numpy array representation of an image file
 
         :return: np.array
         """
@@ -61,7 +61,7 @@ class ProcessedImage(Image):
             return background[1]
 
     def cutout(self, shape: np.array, padding: Tuple[int]):
-        """
+        """Cuts sub image from base image based on input shape. Adds padding if parameter is set.
 
         :param shape:
         :param padding:
@@ -88,7 +88,7 @@ class ProcessedImage(Image):
         self.img = cv2.copyMakeBorder(out, *padding, cv2.BORDER_CONSTANT, value=self.background)
 
     def deskew(self, angle: float = 0):
-        """
+        """Deskews image based on a fixed angle.
         
         :param angle:
         :return:
@@ -96,7 +96,7 @@ class ProcessedImage(Image):
         self.img = rotate_img(self.img, angle, self.background)
 
     def auto_deskew(self):
-        """
+        """Deskews image by calculating optimal rotation angle and then applying rotation.
 
         :return:
         """
