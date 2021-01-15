@@ -34,7 +34,7 @@ def main(xmls, image_extension, output, enumerate_output, background_color, back
         bg = ("color", background_color)
 
     enumerator = [1]
-    click.echo(f"Found {len(file_dict)} XML files.")
+    click.echo(f"Found {len(file_dict)} PAGE XML files…")
 
     with click.progressbar(iterable=file_dict.items(), fill_char=click.style("█", dim=True),
                            label="Extracting text lines…") as files:
