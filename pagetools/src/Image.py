@@ -1,4 +1,4 @@
-from pagetools.src.utils.img_processing import rotate_img
+from pagetools.src.utils.img_processing import rotate_img, background_calc_dispatch_table
 
 from pathlib import Path
 from typing import Tuple
@@ -53,10 +53,9 @@ class ProcessedImage(Image):
         if orientation:
             self.deskew(orientation)
 
-    @staticmethod
-    def get_background(background: tuple):
+    def get_background(self, background: tuple):
         if background[0] == "calculate":
-            return
+            return background_calc_dispatch_table(background[1])(self.img)
         elif background[0] == "color":
             return background[1]
 

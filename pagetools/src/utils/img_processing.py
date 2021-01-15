@@ -4,7 +4,18 @@ import math
 import numpy as np
 import cv2
 
-def calc_dominat_color(img: np.array) -> Union[Iterable, Tuple[np.ndarray]]:
+
+def background_calc_dispatch_table(mode: str):
+    dispatch_table = {
+        "dominant": calc_dominat_color,
+        "mean": calc_mean_color,
+        "median": calc_median_color
+    }
+
+    return dispatch_table[mode]
+
+
+def calc_dominat_color(img: np.array) -> Tuple[int]:
     """Calculates the dominant color of an image using bincounts
 
     :param img:
@@ -13,7 +24,7 @@ def calc_dominat_color(img: np.array) -> Union[Iterable, Tuple[np.ndarray]]:
     two_dim = img.reshape(-1, img.shape[-1])
     color_range = (256,)*3
     one_dim = np.ravel_multi_index(two_dim.T, color_range)
-    return np.unravel_index(np.bincount(one_dim).argmax(), color_range)
+    return tuple([int(c) for c in np.unravel_index(np.bincount(one_dim).argmax(), color_range)])
 
 
 def calc_mean_color(img: np.array) -> Tuple[int]:
