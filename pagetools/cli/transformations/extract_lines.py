@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 @click.command()
-@click.argument("xmls", nargs=-1, type=click.Path())
+@click.argument("xmls", nargs=-1, required=True, type=click.Path())
 @click.option("-ie", "--image-extension", default=".png", type=str, help="Extension of image files. Must be in the same"
                                                                          " directory as corresponding XML file.")
 @click.option("-o", "--output", type=str, default=Path.cwd(), help="Path where generated files will get saved.")
