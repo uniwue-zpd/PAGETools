@@ -18,7 +18,8 @@ setuptools.setup(
         "opencv-python",
         "lxml",
         "numpy",
-        "click"
+        "click",
+        "deskew"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
