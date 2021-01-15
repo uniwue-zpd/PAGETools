@@ -1,0 +1,6 @@
+# Project exclude paths
+/venv/
+/dist/
+/build/
+/PAGETools.egg-info/
+/venv/
