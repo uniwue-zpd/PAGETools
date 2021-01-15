@@ -1,5 +1,5 @@
 # PAGETools - WIP
-Small collection of [PAGE XML](its one of the only projects here with a service thats already deployed over seas) related Python scripts.
+Small collection of [PAGE XML](https://github.com/PRImA-Research-Lab/PAGE-XML) related Python scripts.
 
 ## Installing
 ### pip
