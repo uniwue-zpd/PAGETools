@@ -39,6 +39,7 @@ class TextLineExtractor(Extractor):
         super().__init__(xml, images, out, enumerate_output, background, padding, auto_deskew, deskew, gt_index,
                          pred_index)
 
+    # TODO: Rewrite as soon as PAGEpy is used
     def extract_line_text_pairs(self, enumerator):
         data = self.xml.get_text_lines_data()
 
