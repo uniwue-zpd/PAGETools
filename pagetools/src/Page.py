@@ -1,6 +1,6 @@
 from pagetools.src.utils.page_processing import string_to_coords
 
-from typing import Dict, List
+from typing import Dict, List, Generator
 from pathlib import Path
 
 from lxml import etree
@@ -15,6 +15,9 @@ class Page:
 
     def get_filename(self) -> Path:
         return self.filename
+
+    def get_ns(self) -> Dict[str, str]:
+        return self.ns
 
     @staticmethod
     def autoextract_namespace(tree: etree.Element) -> Dict[str, str]:
@@ -72,3 +75,10 @@ class Page:
                 text_lines_data.append(text_line_data)
 
             return text_lines_data
+
+    def get_texts(self) -> List[etree.Element]:
+        return [elem for elem in self.tree.xpath(f".//page:Unicode", namespaces=self.ns)]
+
+    def export(self, out: Path, pretty=True, encoding="unicode"):
+        with out.open("w") as outfile:
+            outfile.write(etree.tostring(self.tree, pretty_print=pretty, encoding=encoding))

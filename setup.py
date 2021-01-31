@@ -19,7 +19,8 @@ setuptools.setup(
         "lxml",
         "numpy",
         "click",
-        "deskew"
+        "deskew",
+        "regex"
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -29,6 +30,7 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "pagetools-extract-lines = pagetools.cli.transformations.extract_lines:main",
+            "pagetools-regularize = pagetools.cli.transformations.regularize_text:main"
         ]
     },
     keywords=["PAGE XML", "OCR", "optical character recognition"],
