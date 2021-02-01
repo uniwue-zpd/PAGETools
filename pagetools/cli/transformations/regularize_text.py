@@ -45,13 +45,15 @@ def main(xmls: List[str], rules: List[str], safe: bool):
 
     ruleset = sum(rulesets, Ruleset())
 
-    for xml in xmls:
-        regularizer = Regularizer(xml, ruleset)
-        regularizer.regularize()
+    with click.progressbar(iterable=xmls, fill_char=click.style("█", dim=True),
+                           label="Regularising text…") as _xmls:
+        for xml in _xmls:
+            regularizer = Regularizer(xml, ruleset)
+            regularizer.regularize()
 
-        if safe:
-            shutil.move(xml, Path(xml.parent, xml.stem).with_suffix(f".old{get_suffix(xml)}"))
-        regularizer.export(xml)
+            if safe:
+                shutil.move(xml, Path(xml.parent, xml.stem).with_suffix(f".old{get_suffix(xml)}"))
+            regularizer.export(xml)
 
 
 if __name__ == "__main__":
