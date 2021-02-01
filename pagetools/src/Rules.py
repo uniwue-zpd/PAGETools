@@ -38,8 +38,11 @@ class Rule:
 
 
 class Ruleset:
-    def __init__(self):
-        self.rules: List[Rule] = []
+    def __init__(self, rules: List[Rule] = None):
+        self.rules: List[Rule] = rules if rules else []
+
+    def get_rules(self) -> List[Rule]:
+        return self.rules
 
     def from_json(self, _json: Path):
         with _json.open("r") as json_file:
@@ -63,4 +66,22 @@ class Ruleset:
         self.rules.pop(index)
 
     def __str__(self):
-        return self.rules
+        return str(self.rules)
+
+    def __add__(self, other):
+        if isinstance(other, Ruleset):
+            return Ruleset(rules=self.rules.extend(other.get_rules()))
+        else:
+            return NotImplemented
+
+    def __radd__(self, other):
+        if isinstance(other, Ruleset):
+            return self.__add__(other)
+        else:
+            return NotImplemented
+
+    def __eq__(self, ruleset):
+        if isinstance(ruleset, Ruleset):
+            return self.rules == ruleset.get_rules()
+        else:
+            return NotImplemented
