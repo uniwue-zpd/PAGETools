@@ -20,7 +20,8 @@ setuptools.setup(
         "numpy",
         "click",
         "deskew",
-        "regex"
+        "regex",
+        "importlib_resources ; python_version<'3.7'",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -33,6 +34,7 @@ setuptools.setup(
             "pagetools-regularize = pagetools.cli.transformations.regularize_text:main"
         ]
     },
+    include_package_data=True,
     keywords=["PAGE XML", "OCR", "optical character recognition"],
     python_requires='>=3.6',
 )

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from pathlib import Path
 import json
 import regex as re
@@ -44,9 +44,13 @@ class Ruleset:
     def get_rules(self) -> List[Rule]:
         return self.rules
 
-    def from_json(self, _json: Path):
-        with _json.open("r") as json_file:
-            data = json.load(json_file)
+    def from_json(self, _json: Union[list, Path]):
+        data = None
+        if isinstance(_json, Path):
+            with _json.open("r") as json_file:
+                data = json.load(json_file)
+        elif isinstance(_json, list):
+            data = _json
         for _rule in data:
             rule = Rule(original=_rule["rule"][0], target=_rule["rule"][1], rule_type=_rule["type"])
             self.add_rule(rule)
@@ -65,20 +69,15 @@ class Ruleset:
     def remove_rule(self, index: int):
         self.rules.pop(index)
 
-    def __str__(self):
-        return str(self.rules)
-
     def __add__(self, other):
         if isinstance(other, Ruleset):
-            return Ruleset(rules=self.rules.extend(other.get_rules()))
+            self.rules.extend(other.get_rules())
+            return Ruleset(rules=self.rules)
         else:
             return NotImplemented
 
     def __radd__(self, other):
-        if isinstance(other, Ruleset):
-            return self.__add__(other)
-        else:
-            return NotImplemented
+        return self.__add__(other)
 
     def __eq__(self, ruleset):
         if isinstance(ruleset, Ruleset):
