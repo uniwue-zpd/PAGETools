@@ -32,7 +32,7 @@ def main(xmls: List[str], rules: List[str], safe: bool):
                     r.from_json(rules_file)
                     rulesets.append(r)
                 except:
-                    click.echo("Couldn't parse rulset", err=True)
+                    click.echo("Couldn't parse ruleset", err=True)
             # TODO add further input formats
             else:
                 click.echo("Ruleset format not yet supported", err=True)
