@@ -30,8 +30,7 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "pagetools-extract-lines = pagetools.cli.transformations.extract_lines:main",
-            "pagetools-regularize = pagetools.cli.transformations.regularize_text:main"
+            "pagetools = pagetools.cli: cli",
         ]
     },
     include_package_data=True,

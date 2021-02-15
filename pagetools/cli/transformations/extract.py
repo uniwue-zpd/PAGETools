@@ -5,7 +5,7 @@ import click
 from pathlib import Path
 
 
-@click.command()
+@click.command("extract", help="Extract elements as image (optionally with text) files.")
 @click.argument("xmls", nargs=-1, required=True, type=click.Path())
 @click.option("-ie", "--image-extension", default=".png", type=str, help="Extension of image files. Must be in the same"
                                                                          " directory as corresponding XML file.")
@@ -24,7 +24,8 @@ from pathlib import Path
 @click.option("-gt", "--gt-index", type=int, default=0, help="Index of the TextEquiv elements containing ground truth.")
 @click.option("-pred", "--pred-index", type=int, default=1, help="Index of the TextEquiv elements containing predicted "
                                                                  "text.")
-def main(xmls, image_extension, output, enumerate_output, background_color, background_mode, padding, zip_output,
+@click.pass_context
+def extract_cli(xmls, image_extension, output, enumerate_output, background_color, background_mode, padding, zip_output,
          gt_index, pred_index, auto_deskew, deskew):
     file_dict = filesystem.collect_files(map(Path, xmls), image_extension)
 
@@ -47,7 +48,3 @@ def main(xmls, image_extension, output, enumerate_output, background_color, back
 
     if zip_output:
         filesystem.zip_files(files)
-
-
-if __name__ == "__main__":
-    main()
