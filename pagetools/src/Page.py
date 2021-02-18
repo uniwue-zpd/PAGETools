@@ -1,6 +1,6 @@
 from pagetools.src.utils.page_processing import string_to_coords
 
-from typing import Dict, List, Generator
+from typing import Dict, List, Set
 from pathlib import Path
 
 from lxml import etree
@@ -45,36 +45,36 @@ class Page:
         except etree.ParseError as e:
             raise e
 
-    def get_text_lines_data(self) -> List[Dict]:
-        """
+    def get_element_data(self, element_types: Set[str]) -> List[Dict]:
+        element_data = []
 
-        :return:
-        """
-        text_lines_data = []
+        for element_type in element_types:
+            element_regions = self.tree.getroot().findall(f".//page:{element_type}", namespaces=self.ns)
 
-        text_regions = self.tree.getroot().findall(".//page:TextRegion", namespaces=self.ns)
+            for region in element_regions:
+                if element_type == "TextLine":
+                    orientation = float(region.getparent().attrib.get("orientation", 0))
+                else:
+                    orientation = float(region.attrib.get("orientation", 0))
 
-        for text_region in text_regions:
-            orientation = float(text_region.attrib.get("orientation", 0))
+                coords = region.find("./page:Coords", namespaces=self.ns).attrib["points"]
 
-            text_lines = self.tree.getroot().findall(".//page:TextLine", namespaces=self.ns)
-            for idx, text_line in enumerate(text_lines):
-                coords = text_line.find("./page:Coords", namespaces=self.ns).attrib["points"]
-
-                text_line_data = {"id": text_line.attrib.get("id"),
+                text_line_data = {"id": region.attrib.get("id"),
                                   "orientation": orientation,
                                   "coords": string_to_coords(coords),
                                   "text_equivs": []
                                   }
 
-                for text_equiv in text_line.findall("./page:TextEquiv", namespaces=self.ns):
-                    _idx = text_equiv.attrib.get("index")
-                    _content = "".join(text_equiv.find("./page:Unicode", namespaces=self.ns).itertext())
-                    text_line_data["text_equivs"].append({"index": int(_idx), "content": _content})
+                text_equivs = region.findall("./page:TextEquiv", namespaces=self.ns)
+                if len(text_equivs) > 0:
+                    for text_equiv in text_equivs:
+                        idx = text_equiv.attrib.get("index")
+                        content = "".join(text_equiv.find("./page:Unicode", namespaces=self.ns).itertext())
+                        text_line_data["text_equivs"].append({"index": idx, "content": content})
 
-                text_lines_data.append(text_line_data)
+                element_data.append(text_line_data)
 
-            return text_lines_data
+        return element_data
 
     def get_texts(self) -> List[etree.Element]:
         return [elem for elem in self.tree.xpath(f".//page:Unicode", namespaces=self.ns)]
