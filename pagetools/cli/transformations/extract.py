@@ -15,6 +15,7 @@ available_regions.append("*")
               help="PAGE XML element types to extract (highest priority).")
 @click.option("--exclude", multiple=True, type=click.Choice(available_regions, case_sensitive=False), default="*",
               help="PAGE XML element types to exclude from extraction (lowest priority)")
+@click.option("--no-text", is_flag=True, type=bool, default=False, help="Suppresses text extraction.")
 @click.option("-ie", "--image-extension", default=".png", type=str, help="Extension of image files. Must be in the same"
                                                                          " directory as corresponding XML file.")
 @click.option("-o", "--output", type=str, default=Path.cwd(), help="Path where generated files will get saved.")
@@ -32,8 +33,8 @@ available_regions.append("*")
 @click.option("-gt", "--gt-index", type=int, default=0, help="Index of the TextEquiv elements containing ground truth.")
 @click.option("-pred", "--pred-index", type=int, default=1, help="Index of the TextEquiv elements containing predicted "
                                                                  "text.")
-def extract_cli(xmls, include, exclude, image_extension, output, enumerate_output, background_color, background_mode,
-                padding, zip_output, gt_index, pred_index, auto_deskew, deskew):
+def extract_cli(xmls, include, exclude, no_text, image_extension, output, enumerate_output, background_color,
+                background_mode, padding, zip_output, gt_index, pred_index, auto_deskew, deskew):
     file_dict = filesystem.collect_files(map(Path, xmls), image_extension)
 
     if background_mode:
@@ -47,7 +48,7 @@ def extract_cli(xmls, include, exclude, image_extension, output, enumerate_outpu
     with click.progressbar(iterable=file_dict.items(), fill_char=click.style("█", dim=True),
                            label="Extracting text lines…") as files:
         for page_idx, (xml, images) in enumerate(files):
-            extractor = Extractor(xml, images, include, exclude, output, enumerate_output, bg, padding, auto_deskew,
+            extractor = Extractor(xml, images, include, exclude, no_text, output, enumerate_output, bg, padding, auto_deskew,
                                   deskew, gt_index, pred_index)
             extractor.extract(enumerator)
 

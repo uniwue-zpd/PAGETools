@@ -8,13 +8,15 @@ from typing import List, Iterator, Set, Tuple
 
 
 class Extractor:
-    def __init__(self, xml: Path, images: List[Path], include: List[str], exclude: List[str], out: Path,
+    def __init__(self, xml: Path, images: List[Path], include: List[str], exclude: List[str], no_text: bool, out: Path,
                  enumerate_output: bool, background, padding: Tuple[int], auto_deskew: bool, deskew: float,
                  gt_index: int, pred_index: int):
         self.xml = self.xml_to_page(xml)
         self.images = self.get_images(images)
 
         self.element_list = self.build_element_list(include, exclude)
+
+        self.extract_text = not no_text
 
         self.out = out
         self.enumerate_output = enumerate_output
@@ -75,17 +77,18 @@ class Extractor:
                 img_filename = base_filename.with_suffix(img_suffix)
                 img.export_image(img_filename)
 
-                num_non_indexed_text_equivs = 0
-                for text_equiv in entry["text_equivs"]:
-                    if text_equiv["index"] is None:
-                        text_suffix = f".u{num_non_indexed_text_equivs}.txt"
-                        num_non_indexed_text_equivs += 1
-                    elif text_equiv["index"] == self.gt_index:
-                        text_suffix = ".gt.txt"
-                    elif text_equiv["index"] == self.pred_index:
-                        text_suffix = ".pred.txt"
-                    else:
-                        text_suffix = f".i{text_equiv['index']}.txt"
-                    filesystem.write_text_file(text_equiv["content"], base_filename.with_suffix(text_suffix))
+                if self.extract_text:
+                    num_non_indexed_text_equivs = 0
+                    for text_equiv in entry["text_equivs"]:
+                        if text_equiv["index"] is None:
+                            text_suffix = f".u{num_non_indexed_text_equivs}.txt"
+                            num_non_indexed_text_equivs += 1
+                        elif text_equiv["index"] == self.gt_index:
+                            text_suffix = ".gt.txt"
+                        elif text_equiv["index"] == self.pred_index:
+                            text_suffix = ".pred.txt"
+                        else:
+                            text_suffix = f".i{text_equiv['index']}.txt"
+                        filesystem.write_text_file(text_equiv["content"], base_filename.with_suffix(text_suffix))
 
                 enumerator[0] += 1
