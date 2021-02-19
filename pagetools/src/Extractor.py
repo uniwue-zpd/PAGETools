@@ -83,9 +83,9 @@ class Extractor:
                         if text_equiv["index"] is None:
                             text_suffix = f".u{num_non_indexed_text_equivs}.txt"
                             num_non_indexed_text_equivs += 1
-                        elif text_equiv["index"] == self.gt_index:
+                        elif int(text_equiv["index"]) == self.gt_index:
                             text_suffix = ".gt.txt"
-                        elif text_equiv["index"] == self.pred_index:
+                        elif int(text_equiv["index"]) == self.pred_index:
                             text_suffix = ".pred.txt"
                         else:
                             text_suffix = f".i{text_equiv['index']}.txt"
