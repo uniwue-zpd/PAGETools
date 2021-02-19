@@ -12,9 +12,9 @@ available_regions.append("*")
 @click.command("extract", help="Extract elements as image (optionally with text) files.")
 @click.argument("xmls", nargs=-1, required=True, type=click.Path())
 @click.option("--include", multiple=True, type=click.Choice(available_regions, case_sensitive=False), default="*",
-              help="PAGE XML element types to extract (highest priority).")
+              help="PAGE XML element types to extract (highest priority). Default value: '*'")
 @click.option("--exclude", multiple=True, type=click.Choice(available_regions, case_sensitive=False), default="*",
-              help="PAGE XML element types to exclude from extraction (lowest priority)")
+              help="PAGE XML element types to exclude from extraction (lowest priority). Default value: '*'")
 @click.option("--no-text", is_flag=True, type=bool, default=False, help="Suppresses text extraction.")
 @click.option("-ie", "--image-extension", default=".png", type=str, help="Extension of image files. Must be in the same"
                                                                          " directory as corresponding XML file.")

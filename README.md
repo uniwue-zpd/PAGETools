@@ -25,12 +25,14 @@ Usage: pagetools extract [OPTIONS] XMLS...
 Options:
   --include [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to extract (highest
-                                  priority).
+                                  priority). Default value: '*'
 
   --exclude [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to exclude from
-                                  extraction (lowest priority)
+                                  extraction (lowest priority). Default value:
+                                  '*'
 
+  --no-text                       Suppresses text extraction.
   -ie, --image-extension TEXT     Extension of image files. Must be in the
                                   same directory as corresponding XML file.
 
@@ -63,10 +65,15 @@ Options:
                                   predicted text.
 
   --help                          Show this message and exit.
-
 ```
 
-### 
+#### Examples
+Only extract `TextLine` elements:
+```
+pagetools extract <Path/to/xml/files>/*.xml -ie <img_extension> -o <Path/to/output/dir> --include TextLine
+```
+
+Pay in mind that --include / --exclude currently work different from e.g. the same arguments in `rsync` (due to limitations with the `click` library). Inclusion of certain element types always trumps exclusion of the same type, regardless of the order in the call.
 
 ### Regularization
 ```
