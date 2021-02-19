@@ -15,11 +15,11 @@ import shutil
 import click
 
 
-@click.command()
+@click.command("regularize", help="Regularize the text content of PAGE XML files using custom rulesets.")
 @click.argument("xmls", nargs=-1, required=True, type=click.Path())
 @click.option("-r", "--rules", type=click.Path(), multiple=True, help="File(s) which contains serialized ruleset.")
 @click.option("-s/-us", "--safe/--unsafe", default=True, help="Creates backups of original files before overwriting.")
-def main(xmls: List[str], rules: List[str], safe: bool):
+def regularize_cli(xmls: List[str], rules: List[str], safe: bool):
     xmls = list(map(Path, xmls))
     rules = list(map(Path, rules))
     rulesets: List[Ruleset] = []
@@ -32,7 +32,7 @@ def main(xmls: List[str], rules: List[str], safe: bool):
                     r.from_json(rules_file)
                     rulesets.append(r)
                 except:
-                    click.echo("Couldn't parse rulset", err=True)
+                    click.echo("Couldn't parse ruleset", err=True)
             # TODO add further input formats
             else:
                 click.echo("Ruleset format not yet supported", err=True)
@@ -54,7 +54,3 @@ def main(xmls: List[str], rules: List[str], safe: bool):
             if safe:
                 shutil.move(xml, Path(xml.parent, xml.stem).with_suffix(f".old{get_suffix(xml)}"))
             regularizer.export(xml)
-
-
-if __name__ == "__main__":
-    main()

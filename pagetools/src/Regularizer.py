@@ -2,9 +2,6 @@ from pagetools.src.Page import Page
 from pagetools.src.Rules import Ruleset
 
 from pathlib import Path
-from typing import List
-
-from lxml import etree
 
 
 class Regularizer:

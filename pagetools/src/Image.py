@@ -48,10 +48,8 @@ class ProcessedImage(Image):
     def __init__(self, img: Path, background: Tuple[str, str], orientation: float):
         super().__init__(img)
 
+        self.orientation = orientation
         self.background = self.get_background(background)
-
-        if orientation:
-            self.deskew(orientation)
 
     def get_background(self, background: tuple):
         if background[0] == "calculate":
@@ -59,32 +57,36 @@ class ProcessedImage(Image):
         elif background[0] == "color":
             return background[1]
 
-    def cutout(self, shape: np.array, padding: Tuple[int]):
+    def cutout(self, shape: np.array, padding: Tuple[int], background: tuple):
         """Cuts sub image from base image based on input shape. Adds padding if parameter is set.
 
         :param shape:
         :param padding:
+        :param background:
         :return:
         """
+        background = self.get_background(background)
         rect = cv2.boundingRect(shape)
         x, y, w, h = rect
 
         cropped = self.img[y:y + h, x:x + w].copy()
+
         pts = shape - shape.min(axis=0)
-
         mask = np.zeros(cropped.shape[:2], np.uint8)
-        cv2.drawContours(mask, [pts], -1, (255, 255, 255), -1, cv2.LINE_AA)
+        cv2.drawContours(mask, [pts], -1, (255, 255, 255), -1)
 
-        out = cv2.bitwise_and(cropped, cropped, mask=mask)
+        dst = cv2.bitwise_and(cropped, cropped, mask=mask)
 
-        bg = np.ones_like(cropped, np.uint8) * 255
-        cv2.bitwise_not(bg, bg, mask=mask)
-        out = bg + out
+        im2 = np.full((dst.shape[0], dst.shape[1], 3), background, dtype=np.uint8)
 
-        self.img = out
-        self.img = cv2.copyMakeBorder(out, *padding, cv2.BORDER_CONSTANT, value=self.background)
+        inverted_mask = cv2.bitwise_not(mask)
+        bg = cv2.bitwise_or(im2, im2, mask=inverted_mask)
+        final = rotate_img(dst + bg, self.orientation, self.background)
 
-    def deskew(self, angle: float = 0):
+        self.img = final
+        self.img = cv2.copyMakeBorder(final, *padding, cv2.BORDER_CONSTANT, value=self.background)
+
+    def deskew(self, angle: float = 0.0):
         """Deskews image based on a fixed angle.
         
         :param angle:

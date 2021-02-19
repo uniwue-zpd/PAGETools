@@ -1,5 +1,4 @@
-from typing import Union, Tuple
-import math
+from typing import Tuple, Union
 
 import numpy as np
 import cv2
@@ -53,14 +52,11 @@ def rotate_img(image: np.ndarray, angle: float, background: Union[int, Tuple[int
     :param background:
     :return:
     """
-    old_width, old_height = image.shape[:2]
-    angle_radian = math.radians(angle)
-    width = abs(np.sin(angle_radian) * old_height) + abs(np.cos(angle_radian) * old_width)
-    height = abs(np.sin(angle_radian) * old_width) + abs(np.cos(angle_radian) * old_height)
+    rows = image.shape[0]
+    cols = image.shape[1]
 
-    image_center = tuple(np.array(image.shape[1::-1]) / 2)
-    rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
-    rot_mat[1, 2] += (width - old_width) / 2
-    rot_mat[0, 2] += (height - old_height) / 2
-    return cv2.warpAffine(image, rot_mat, (int(round(height)), int(round(width))),
-                          flags=cv2.INTER_CUBIC, borderValue=background)
+    img_center = (cols / 2, rows / 2)
+    rot_mat = cv2.getRotationMatrix2D(img_center, angle*-1, 1)
+
+    rotated_image = cv2.warpAffine(image, rot_mat, (cols, rows), borderValue=background)
+    return rotated_image
