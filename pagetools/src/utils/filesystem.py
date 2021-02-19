@@ -43,8 +43,9 @@ def collect_files(xml_files: Iterator[Path], img_extension: str) -> Dict[Path, L
     file_dict = {}
 
     for xml in xml_files:
-        file_dict[xml] = [image for image in xml.parent.glob("*") if
-                          (get_file_basename(xml) == get_file_basename(image) and str(image).endswith(img_extension))]
+        if xml.is_file():
+            file_dict[xml] = [image for image in xml.parent.glob("*") if
+                              (get_file_basename(xml) == get_file_basename(image) and str(image).endswith(img_extension))]
     return file_dict
 
 

@@ -37,6 +37,10 @@ def extract_cli(xmls, include, exclude, no_text, image_extension, output, enumer
                 background_mode, padding, zip_output, gt_index, pred_index, auto_deskew, deskew):
     file_dict = filesystem.collect_files(map(Path, xmls), image_extension)
 
+    if not file_dict:
+        click.echo(click.style("No XML files found.\nAborting…", fg='red'))
+        return
+
     if background_mode:
         bg = ("calculate", background_mode)
     else:
