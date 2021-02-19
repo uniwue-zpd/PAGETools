@@ -11,10 +11,10 @@ available_regions.append("*")
 
 @click.command("extract", help="Extract elements as image (optionally with text) files.")
 @click.argument("xmls", nargs=-1, required=True, type=click.Path())
-@click.option("--include", multiple=True, type=click.Choice(available_regions, case_sensitive=False), default="*",
-              help="PAGE XML element types to extract (highest priority). Default value: '*'")
-@click.option("--exclude", multiple=True, type=click.Choice(available_regions, case_sensitive=False), default="*",
-              help="PAGE XML element types to exclude from extraction (lowest priority). Default value: '*'")
+@click.option("--include", multiple=True, type=click.Choice(available_regions, case_sensitive=False),
+              help="PAGE XML element types to extract (highest priority).")
+@click.option("--exclude", multiple=True, type=click.Choice(available_regions, case_sensitive=False),
+              help="PAGE XML element types to exclude from extraction (lowest priority).")
 @click.option("--no-text", is_flag=True, type=bool, default=False, help="Suppresses text extraction.")
 @click.option("-ie", "--image-extension", default=".png", type=str, help="Extension of image files. Must be in the same"
                                                                          " directory as corresponding XML file.")
@@ -28,7 +28,8 @@ available_regions.append("*")
               help="Color calc mode to fill up background (overwrites -bg / --background-color).")
 @click.option("-p", "--padding", nargs=4, default=(0, 0, 0, 0), type=int, help="Padding in pixels around the line image"
                                                                                " cutout (top, bottom, left, right).")
-@click.option("-ad", "--auto-deskew", is_flag=True, help="Automatically deskew extracted line images (Experimental!).")
+@click.option("-ad", "--auto-deskew", is_flag=True, help="Automatically deskew extracted line images using a custom "
+                                                         "algorithm (Experimental!).")
 @click.option("-d", "--deskew", default=0.0, type=float, help="Angle for manual clockwise rotation of the line images.")
 @click.option("-gt", "--gt-index", type=int, default=0, help="Index of the TextEquiv elements containing ground truth.")
 @click.option("-pred", "--pred-index", type=int, default=1, help="Index of the TextEquiv elements containing predicted "

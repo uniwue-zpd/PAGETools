@@ -25,12 +25,11 @@ Usage: pagetools extract [OPTIONS] XMLS...
 Options:
   --include [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to extract (highest
-                                  priority). Default value: '*'
+                                  priority).
 
   --exclude [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to exclude from
-                                  extraction (lowest priority). Default value:
-                                  '*'
+                                  extraction (lowest priority).
 
   --no-text                       Suppresses text extraction.
   -ie, --image-extension TEXT     Extension of image files. Must be in the

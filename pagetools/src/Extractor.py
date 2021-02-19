@@ -43,11 +43,12 @@ class Extractor:
         element_list = extractable_regions.copy()
         if "*" in exclude:
             element_list.clear()
-        else:
-            element_list = [element_list.remove(element_type) for element_type in exclude]
+        elif exclude:
+            for element_type in exclude:
+                element_list.remove(element_type)
         if "*" in include:
             element_list = extractable_regions.copy()
-        else:
+        elif include:
             element_list.extend([elem_type for elem_type in include if elem_type != "*"])
         return element_list
 
