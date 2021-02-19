@@ -48,10 +48,8 @@ class ProcessedImage(Image):
     def __init__(self, img: Path, background: Tuple[str, str], orientation: float):
         super().__init__(img)
 
+        self.orientation = orientation
         self.background = self.get_background(background)
-
-        if orientation:
-            self.deskew(orientation)
 
     def get_background(self, background: tuple):
         if background[0] == "calculate":
@@ -83,7 +81,7 @@ class ProcessedImage(Image):
 
         inverted_mask = cv2.bitwise_not(mask)
         bg = cv2.bitwise_or(im2, im2, mask=inverted_mask)
-        final = dst + bg
+        final = rotate_img(dst + bg, self.orientation, self.background)
 
         self.img = final
         self.img = cv2.copyMakeBorder(final, *padding, cv2.BORDER_CONSTANT, value=self.background)
