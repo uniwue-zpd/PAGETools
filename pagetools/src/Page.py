@@ -79,6 +79,9 @@ class Page:
     def get_texts(self) -> List[etree.Element]:
         return [elem for elem in self.tree.xpath(f".//page:Unicode", namespaces=self.ns)]
 
+    def get_text_regions(self) -> List[etree.Element]:
+        return [elem for elem in self.tree.findall(".//page:TextRegion", namespaces=self.ns)]
+
     def export(self, out: Path, pretty=True, encoding="unicode"):
         with out.open("w") as outfile:
             outfile.write(etree.tostring(self.tree, pretty_print=pretty, encoding=encoding))
