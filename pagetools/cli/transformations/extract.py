@@ -1,5 +1,5 @@
 from pagetools.src.utils import filesystem
-from pagetools.src.Extractor import Extractor
+from pagetools.src.extraction.Extractor import Extractor
 from pagetools.src.utils.constants import extractable_regions
 
 import click

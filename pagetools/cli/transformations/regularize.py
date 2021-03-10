@@ -1,5 +1,5 @@
-from pagetools.src.Regularizer import Regularizer
-from pagetools.src.Rules import Ruleset
+from pagetools.src.regularization.Regularizer import Regularizer
+from pagetools.src.regularization.Rules import Ruleset
 from pagetools.src.utils.filesystem import get_suffix
 
 try:
