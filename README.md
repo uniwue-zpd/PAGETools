@@ -82,10 +82,18 @@ Usage: pagetools regularize [OPTIONS] XMLS...
   Regularize the text content of PAGE XML files using custom rulesets.
 
 Options:
-  -r, --rules PATH            File(s) which contains serialized ruleset.
-  -s, --safe / -us, --unsafe  Creates backups of original files before
-                              overwriting.
+  -dr, --default-rules / -ndr, --no-default-rules
+                                  Loads default ruleset.
+  -dp, --default-punctuation / -ndp, --no-default-punctuation
+                                  Loads default punctuation ruleset.
+  -ds, --default-spaces / -nds, --no-default-spaces
+                                  Loads default spaces ruleset.
+  -nd, --no-default               Disables all default rulesets. Overrides all
+                                  other --default-* options.
 
-  --help                      Show this message and exit.
+  -r, --rules PATH                File(s) which contains serialized ruleset.
+  -s, --safe / -us, --unsafe      Creates backups of original files before
+                                  overwriting.
 
+  --help                          Show this message and exit.
 ```
