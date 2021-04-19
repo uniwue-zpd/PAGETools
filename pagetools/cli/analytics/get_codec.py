@@ -1,5 +1,7 @@
 from pagetools.src.Page import Page
 
+from pathlib import Path
+import glob
 from collections import Counter
 import string
 import json
@@ -28,10 +30,18 @@ from lxml import etree
 def get_codec_cli(files, level, index, most_common, output, remove_whitespace, output_format, frequencies,
                   text_output_newline, verbose):
     codec = Counter()
-
     xpath = build_xpath(level, index)
 
-    with click.progressbar(files) as _files:
+    collected_files = []
+    for file in files:
+        if Path(file).is_file():
+            collected_files.append(file)
+        else:
+            globbed_files = glob.glob(file)
+            for _file in globbed_files:
+                collected_files.append(_file)
+
+    with click.progressbar(collected_files) as _files:
         for file in _files:
             try:
                 page = Page(file)
