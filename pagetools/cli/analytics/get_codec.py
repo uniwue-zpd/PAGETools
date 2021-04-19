@@ -21,7 +21,7 @@ from lxml import etree
               help="Only prints n most common entries. Shows all by default.")
 @click.option("-o", "--output", help="File to which results are written.")
 @click.option("-rw", "--remove-whitespace", is_flag=True, default=False)
-@click.option("-of", "--output-format", type=click.Choice(["json", "csv", "txt"]), default="json",
+@click.option("-of", "--output-format", type=click.Choice(["json", "csv", "txt"]), default="csv",
               help="Available result formats.")
 @click.option("-freq", "--frequencies", is_flag=True, default=False, help="Outputs character frequencies.")
 @click.option("--text-output-newline", is_flag=True, default=False,
