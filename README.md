@@ -17,7 +17,8 @@ pip install .
 
 ## Usage
 
-### Extraction
+### Transformations 
+#### Extraction
 ```
 Usage: pagetools extract [OPTIONS] XMLS...
 
@@ -67,7 +68,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-#### Examples
+##### Examples
 Only extract `TextLine` elements:
 ```
 pagetools extract <Path/to/xml/files>/*.xml -ie <img_extension> -o <Path/to/output/dir> --include TextLine --exclude "*"
@@ -75,25 +76,52 @@ pagetools extract <Path/to/xml/files>/*.xml -ie <img_extension> -o <Path/to/outp
 
 Pay in mind that --include / --exclude currently work different from e.g. the same arguments in `rsync` (due to limitations with the `click` library). Inclusion of certain element types always trumps exclusion of the same type, regardless of the order in the call.
 
-### Regularization
+#### Regularization
 ```
 Usage: pagetools regularize [OPTIONS] XMLS...
 
   Regularize the text content of PAGE XML files using custom rulesets.
 
 Options:
-  -dr, --default-rules / -ndr, --no-default-rules
-                                  Loads default ruleset.
-  -dp, --default-punctuation / -ndp, --no-default-punctuation
-                                  Loads default punctuation ruleset.
-  -ds, --default-spaces / -nds, --no-default-spaces
-                                  Loads default spaces ruleset.
-  -nd, --no-default               Disables all default rulesets. Overrides all
-                                  other --default-* options.
+  --remove-default [default|ligatures_consonantal|ligatures_vocal|punctuation|quotes|roman_digits|spaces|uvius|various]
+                                  Removes specified default ruleset.
+  --add-default [default|ligatures_consonantal|ligatures_vocal|punctuation|quotes|roman_digits|spaces|uvius|various]
+                                  Adds specified default ruleset. Overrides
+                                  all other default options.
 
+  -nd, --no-default               Disables all default rulesets.
   -r, --rules PATH                File(s) which contains serialized ruleset.
   -s, --safe / -us, --unsafe      Creates backups of original files before
                                   overwriting.
 
   --help                          Show this message and exit.
+```
+
+### Analytics
+#### Get Codec
+```
+Usage: pagetools get_codec [OPTIONS] FILES...
+
+  Retrieves codec of PAGE XML files.
+
+Options:
+  -l, --level [region|line|word|glyph]
+  -idx, --index INTEGER           Considers only text from TextEquiv elements
+                                  with a certain index.
+
+  -mc, --most-common INTEGER      Only prints n most common entries. Shows all
+                                  by default.
+
+  -o, --output TEXT               File to which results are written.
+  -rw, --remove-whitespace
+  -of, --output-format [json|csv|txt]
+                                  Available result formats.
+  -freq, --frequencies            Outputs character frequencies.
+  --text-output-newline           Inserts new line after every character in
+                                  txt output. Only applies when frequencies
+                                  aren't output.
+
+  --verbose / --silent            Choose between verbose or silent output.
+  --help                          Show this message and exit.
+
 ```
