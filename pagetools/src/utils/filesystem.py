@@ -2,6 +2,7 @@ from pathlib import Path
 import zipfile
 import time
 from typing import List, Dict, Iterator
+import glob
 
 import click
 
@@ -33,8 +34,21 @@ def get_suffix(path: Path) -> str:
     return f".{'.'.join(path.name.split('.')[1:])}"
 
 
+def parse_file_input(files: List[str]) -> List[Path]:
+    collected_files = []
+
+    for file in files:
+        if Path(file).is_file():
+            collected_files.append(Path(file))
+        else:
+            globbed_files = glob.glob(file)
+            for _file in globbed_files:
+                collected_files.append(Path(_file))
+    return collected_files
+
+
 def collect_files(xml_files: Iterator[Path], img_extension: str) -> Dict[Path, List[Path]]:
-    """
+    """Collects files for region extraction
 
     :param xml_files:
     :param img_extension:
@@ -46,6 +60,12 @@ def collect_files(xml_files: Iterator[Path], img_extension: str) -> Dict[Path, L
         if xml.is_file():
             file_dict[xml] = [image for image in xml.parent.glob("*") if
                               (get_file_basename(xml) == get_file_basename(image) and str(image).endswith(img_extension))]
+        else:
+            globbed_files = glob.glob(xml)
+            for _file in globbed_files:
+                file_dict[xml] = [image for image in _file.parent.glob("*") if
+                                  (get_file_basename(xml) == get_file_basename(image) and str(image).endswith(
+                                      img_extension))]
     return file_dict
 
 

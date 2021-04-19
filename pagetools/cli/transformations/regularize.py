@@ -1,3 +1,5 @@
+from pagetools.src.utils import filesystem
+
 from pagetools.src.regularization.Regularizer import Regularizer
 from pagetools.src.regularization.Rules import Ruleset
 from pagetools.src.utils.filesystem import get_suffix
@@ -34,7 +36,7 @@ default_rulesets = ["default", "ligatures_consonantal", "punctuation", "quotes",
               help="Creates backups of original files before overwriting.")
 def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List[str], no_default: bool,
                    rules: List[str], safe: bool):
-    xmls = list(map(Path, xmls))
+    xmls = filesystem.parse_file_input(xmls)
     rules = list(map(Path, rules))
     rulesets: List[Ruleset] = []
 
@@ -84,4 +86,3 @@ def collect_default_rulesets(remove_default: List[str], add_default: List[str], 
         rules.append(r)
 
     return rules
-
