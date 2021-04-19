@@ -15,46 +15,30 @@ import shutil
 import click
 
 
+default_rulesets = ["default", "ligatures_consonantal", "ligatures_vocal", "punctuation", "quotes", "roman_digits",
+                   "spaces", "uvius", "various"]
+
+
 @click.command("regularize",
                help="Regularize the text content of PAGE XML files using custom rulesets.")
 @click.argument("xmls", nargs=-1, required=True, type=click.Path())
-@click.option("-dr/-ndr", "--default-rules/--no-default-rules", default=True,
-              help="Loads default ruleset.")
-@click.option("-dp/-ndp", "--default-punctuation/--no-default-punctuation", default=True,
-              help="Loads default punctuation ruleset.")
-@click.option("-ds/-nds", "--default-spaces/--no-default-spaces", default=True,
-              help="Loads default spaces ruleset.")
-@click.option("-nd", "--no-default", is_flag=True,
-              help="Disables all default rulesets. Overrides all other --default-* options.")
+@click.option("--remove-default", multiple=True, type=click.Choice(default_rulesets),
+              help="Removes specified default ruleset.")
+@click.option("--add-default", multiple=True, type=click.Choice(default_rulesets),
+              help="Adds specified default ruleset. Overrides all other default options.")
+@click.option("-nd", "--no-default", is_flag=True, default=False,
+              help="Disables all default rulesets.")
 @click.option("-r", "--rules", type=click.Path(), multiple=True,
               help="File(s) which contains serialized ruleset.")
 @click.option("-s/-us", "--safe/--unsafe", default=True,
               help="Creates backups of original files before overwriting.")
-def regularize_cli(xmls: List[str], default_rules: bool, default_punctuation: bool, default_spaces: bool, no_default: bool,
+def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List[str], no_default: bool,
                    rules: List[str], safe: bool):
     xmls = list(map(Path, xmls))
     rules = list(map(Path, rules))
     rulesets: List[Ruleset] = []
 
-    if not no_default:
-        if default_rules:
-            with pkg_resources.path("pagetools.resources.rulesets", "default.json") as json_file:
-                _json = json.loads(json_file.read_text())
-            r = Ruleset()
-            r.from_json(_json)
-            rulesets.append(r)
-        if default_punctuation:
-            with pkg_resources.path("pagetools.resources.rulesets", "punctuation.json") as json_file:
-                _json = json.loads(json_file.read_text())
-            r = Ruleset()
-            r.from_json(_json)
-            rulesets.append(r)
-        if default_spaces:
-            with pkg_resources.path("pagetools.resources.rulesets", "spaces.json") as json_file:
-                _json = json.loads(json_file.read_text())
-            r = Ruleset()
-            r.from_json(_json)
-            rulesets.append(r)
+    rulesets.extend(collect_default_rulesets(remove_default, add_default, no_default))
 
     if rules:
         for rules_file in rules:
@@ -81,3 +65,23 @@ def regularize_cli(xmls: List[str], default_rules: bool, default_punctuation: bo
             if safe:
                 shutil.move(xml, Path(xml.parent, xml.stem).with_suffix(f".old{get_suffix(xml)}"))
             regularizer.export(xml)
+
+
+def collect_default_rulesets(remove_default: List[str], add_default: List[str], no_default: bool):
+    _default_rulesets = [] if no_default else default_rulesets.copy()
+    rules = []
+
+    for ruleset in remove_default:
+        _default_rulesets.remove(ruleset)
+    for ruleset in add_default:
+        _default_rulesets.append(ruleset)
+
+    for ruleset in set(_default_rulesets):
+        with pkg_resources.path("pagetools.resources.rulesets", f"{ruleset}.json") as json_file:
+            _json = json.loads(json_file.read_text())
+        r = Ruleset()
+        r.from_json(_json)
+        rules.append(r)
+
+    return rules
+

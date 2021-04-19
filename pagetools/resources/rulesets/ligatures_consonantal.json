@@ -1,0 +1,21 @@
+[
+  {"rule": ["Ꜹ", "AV"], "type": "regex"},
+  {"rule": ["ꜹ", "av"], "type": "regex"},
+  {"rule": ["Ꜻ", "AV"], "type": "regex"},
+  {"rule": ["ꜻ", "av"], "type": "regex"},
+  {"rule": ["Ꜽ", "AY"], "type": "regex"},
+  {"rule": ["ꜽ", "ay"], "type": "regex"},
+  {"rule": ["🙰", "et"], "type": "regex"},
+  {"rule": ["ﬀ", "ff"], "type": "regex"},
+  {"rule": ["ﬃ", "ffi"], "type": "regex"},
+  {"rule": ["ﬄ", "ffl"], "type": "regex"},
+  {"rule": ["ﬂ", "fl"], "type": "regex"},
+  {"rule": ["ﬁ", "fi"], "type": "regex"},
+  {"rule": ["ẞ", "ſs"], "type": "regex"},
+  {"rule": ["ﬆ", "st"], "type": "regex"},
+  {"rule": ["ﬅ", "ſt"], "type": "regex"},
+  {"rule": ["Ꜩ", "TZ"], "type": "regex"},
+  {"rule": ["ꜩ", "tz"], "type": "regex"},
+  {"rule": ["Ꝡ", "VY"], "type": "regex"},
+  {"rule": ["ꝡ", "vy"], "type": "regex"}
+]

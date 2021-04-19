@@ -1,0 +1,15 @@
+[
+  {"rule": ["Ꜳ", "AA"], "type": "regex"},
+  {"rule": ["ꜳ", "aa"], "type": "regex"},
+  {"rule": ["Æ", "AE"], "type": "regex"},
+  {"rule": ["æ", "ae"], "type": "regex"},
+  {"rule": ["Ꜵ", "AO"], "type": "regex"},
+  {"rule": ["ꜵ", "ao"], "type": "regex"},
+  {"rule": ["Ꜷ", "AU"], "type": "regex"},
+  {"rule": ["ꜷ", "au"], "type": "regex"},
+  {"rule": ["Œ", "OE"], "type": "regex"},
+  {"rule": ["œ", "oe"], "type": "regex"},
+  {"rule": ["Ꝏ", "OO"], "type": "regex"},
+  {"rule": ["ꝏ", "oo"], "type": "regex"},
+  {"rule": ["ᵫ", "ue"], "type": "regex"}
+]

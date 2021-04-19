@@ -16,6 +16,7 @@ def cli(**kwargs):
 
 
 cli.add_command(get_codec_cli)
+
 cli.add_command(extract_cli)
 cli.add_command(regularize_cli)
 cli.add_command(change_text_index)

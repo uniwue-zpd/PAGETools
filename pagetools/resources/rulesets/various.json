@@ -1,0 +1,5 @@
+[
+  {"rule": ["µ", "μ"], "type": "regex"},
+  {"rule": ["–", "-"], "type": "regex"},
+  {"rule": ["—", "-"], "type": "regex"}
+]
