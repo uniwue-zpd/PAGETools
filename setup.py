@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PAGETools",
-    version="0.2.9",
+    version="0.2.10",
     license="MIT License",
     author="Maximilian Nöth",
     author_email="maximilian.noeth@uni-wuerzburg.de",
