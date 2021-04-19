@@ -15,8 +15,8 @@ import shutil
 import click
 
 
-default_rulesets = ["default", "ligatures_consonantal", "ligatures_vocal", "punctuation", "quotes", "roman_digits",
-                   "spaces", "uvius", "various"]
+default_rulesets = ["default", "ligatures_consonantal", "punctuation", "quotes", "roman_digits", "spaces", "uvius",
+                    "various"]
 
 
 @click.command("regularize",
