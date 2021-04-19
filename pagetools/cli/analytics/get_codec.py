@@ -26,7 +26,7 @@ from lxml import etree
 @click.option("-freq", "--frequencies", is_flag=True, default=False, help="Outputs character frequencies.")
 @click.option("--text-output-newline", is_flag=True, default=False,
               help="Inserts new line after every character in txt output. Only applies when frequencies aren't output.")
-@click.option("--verbose/--silent", default=True, help="Choose between verbose or silent output.")
+@click.option("--verbose/--silent", default=False, help="Choose between verbose or silent output.")
 def get_codec_cli(files, level, index, most_common, output, remove_whitespace, output_format, frequencies,
                   text_output_newline, verbose):
     codec = Counter()
