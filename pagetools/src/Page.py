@@ -42,6 +42,8 @@ class Page:
         """
         try:
             return etree.parse(str(file))
+        except etree.XMLSyntaxError as e:
+            raise e
         except etree.ParseError as e:
             raise e
 

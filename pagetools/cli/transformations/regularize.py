@@ -15,6 +15,7 @@ from pathlib import Path
 import shutil
 
 import click
+from lxml import etree
 
 
 default_rulesets = ["default", "ligatures_consonantal", "punctuation", "quotes", "roman_digits", "spaces", "uvius",
@@ -61,7 +62,11 @@ def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List
     with click.progressbar(iterable=xmls, fill_char=click.style("█", dim=True),
                            label="Regularising text…") as _xmls:
         for xml in _xmls:
-            regularizer = Regularizer(xml, ruleset)
+            try:
+                regularizer = Regularizer(xml, ruleset)
+            except etree.XMLSyntaxError:
+                click.echo(f"{xml}: Image couldn't get parsed.")
+                continue
             regularizer.regularize()
 
             if safe:
