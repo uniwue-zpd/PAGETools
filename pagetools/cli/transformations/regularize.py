@@ -18,7 +18,7 @@ import click
 from lxml import etree
 
 
-default_rulesets = ["default", "ligatures_consonantal", "punctuation", "quotes", "roman_digits", "spaces", "uvius",
+default_rulesets = ["ligatures_consonantal", "punctuation", "quotes", "roman_digits", "spaces", "uvius",
                     "various"]
 
 
