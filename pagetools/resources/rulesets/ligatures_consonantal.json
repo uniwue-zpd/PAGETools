@@ -11,7 +11,6 @@
   {"rule": ["ﬄ", "ffl"], "type": "regex"},
   {"rule": ["ﬂ", "fl"], "type": "regex"},
   {"rule": ["ﬁ", "fi"], "type": "regex"},
-  {"rule": ["ẞ", "ſs"], "type": "regex"},
   {"rule": ["ﬆ", "st"], "type": "regex"},
   {"rule": ["ﬅ", "ſt"], "type": "regex"},
   {"rule": ["Ꜩ", "TZ"], "type": "regex"},

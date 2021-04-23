@@ -1,10 +1,8 @@
 [
   {"rule": ["''", "\""], "type": "regex"},
-  {"rule": ["z", "ʒ"], "type": "regex"},
-  {"rule": ["Z", "Ʒ"], "type": "regex"},
   {"rule": ["ꝛ", "r"], "type": "regex"},
   {"rule": ["I", "J"], "type": "regex"},
-  {"rule": ["⸍", "\\\\"], "type": "regex"},
+  {"rule": ["⸍", "/"], "type": "regex"},
   {"rule": ["q̈", "qᷓ"], "type": "regex"},
   {"rule": ["&c̈", "&cᷓ"], "type": "regex"},
   {"rule": ["ḡ", "gᷓ"], "type": "regex"},
