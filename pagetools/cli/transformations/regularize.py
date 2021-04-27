@@ -82,7 +82,7 @@ def collect_default_rulesets(remove_default: List[str], add_default: List[str], 
     for ruleset in add_default:
         _default_rulesets.append(ruleset)
 
-    for ruleset in set(_default_rulesets):
+    for ruleset in list(dict.fromkeys(_default_rulesets)):
         with pkg_resources.path("pagetools.resources.rulesets", f"{ruleset}.json") as json_file:
             _json = json.loads(json_file.read_text())
         r = Ruleset()
