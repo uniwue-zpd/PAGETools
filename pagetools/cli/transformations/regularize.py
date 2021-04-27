@@ -10,7 +10,7 @@ except ImportError:
     import importlib_resources as pkg_resources
 
 import json
-from typing import List
+from typing import List, Union
 from pathlib import Path
 import shutil
 
@@ -32,10 +32,12 @@ default_rulesets = ["various", "quotes", "ligatures_consonantal", "roman_digits"
               help="Disables all default rulesets.")
 @click.option("-r", "--rules", type=click.Path(), multiple=True,
               help="File(s) which contains serialized ruleset.")
+@click.option("-nu", "--normalize-unicode", type=click.Choice(["NFC", "NFD", "NFKC", "NFKD"]), default=None,
+              help="Normalize unicode for both rules and PAGE XML tests.")
 @click.option("-s/-us", "--safe/--unsafe", default=True,
               help="Creates backups of original files before overwriting.")
 def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List[str], no_default: bool,
-                   rules: List[str], safe: bool):
+                   rules: List[str], normalize_unicode: Union[None, str], safe: bool):
     xmls = filesystem.parse_file_input(xmls)
     rules = list(map(Path, rules))
     rulesets: List[Ruleset] = []
@@ -62,7 +64,7 @@ def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List
                            label="Regularising text…") as _xmls:
         for xml in _xmls:
             try:
-                regularizer = Regularizer(xml, ruleset)
+                regularizer = Regularizer(xml, ruleset, normalize_unicode)
             except etree.XMLSyntaxError:
                 click.echo(f"{xml}: Image couldn't get parsed.")
                 continue
@@ -73,7 +75,8 @@ def regularize_cli(xmls: List[str], remove_default: List[str], add_default: List
             regularizer.export(xml)
 
 
-def collect_default_rulesets(remove_default: List[str], add_default: List[str], no_default: bool):
+def collect_default_rulesets(remove_default: List[str], add_default: List[str], no_default: bool,
+                             normalize_unicode: Union[None, str] = None):
     _default_rulesets = [] if no_default else default_rulesets.copy()
     rules = []
 
@@ -85,7 +88,7 @@ def collect_default_rulesets(remove_default: List[str], add_default: List[str], 
     for ruleset in list(dict.fromkeys(_default_rulesets)):
         with pkg_resources.path("pagetools.resources.rulesets", f"{ruleset}.json") as json_file:
             _json = json.loads(json_file.read_text())
-        r = Ruleset()
+        r = Ruleset(normalize_unicode=normalize_unicode)
         r.from_json(_json)
         rules.append(r)
 

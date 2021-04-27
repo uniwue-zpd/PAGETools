@@ -2,6 +2,7 @@ from typing import List, Union
 from pathlib import Path
 import json
 import regex as re
+import unicodedata as ud
 
 
 class Rule:
@@ -25,7 +26,7 @@ class Rule:
     def get_rule_type(self) -> str:
         return self.rule_type
 
-    def apply(self, text: str):
+    def apply(self, text: str) -> str:
         if self.rule_type == "raw":
             return text.replace(self.original, self.target)
         elif self.rule_type == "regex":
@@ -38,8 +39,9 @@ class Rule:
 
 
 class Ruleset:
-    def __init__(self, rules: List[Rule] = None):
+    def __init__(self, rules: List[Rule] = None, normalize_unicode: [None, str] = None):
         self.rules: List[Rule] = rules if rules else []
+        self.normalize_unicode = normalize_unicode
 
     def get_rules(self) -> List[Rule]:
         return self.rules
@@ -52,7 +54,13 @@ class Ruleset:
         elif isinstance(_json, list):
             data = _json
         for _rule in data:
-            rule = Rule(original=_rule["rule"][0], target=_rule["rule"][1], rule_type=_rule["type"])
+            if self.normalize_unicode:
+                _original = ud.normalize(self.normalize_unicode, _rule["rule"][0])
+                _target = ud.normalize(self.normalize_unicode, _rule["rule"][1])
+            else:
+                _original = _rule["rule"][0]
+                _target = _rule["rule"][1]
+            rule = Rule(original=_original, target=_target, rule_type=_rule["type"])
             self.add_rule(rule)
 
     def add_rule(self, rule: Rule, index: int = None):
