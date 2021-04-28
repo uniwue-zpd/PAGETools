@@ -124,5 +124,11 @@
   {"rule": ["ū", "ũ"], "type": "raw"},
   {"rule": ["c̄", "c̃"], "type": "raw"},
   {"rule": ["q̄", "q̃"], "type": "raw"},
-  {"rule": ["r̄", "r̃"], "type": "raw"}
+  {"rule": ["r̄", "r̃"], "type": "raw"},
+  {"rule": ["z", "ʒ"], "type": "raw"},
+  {"rule": ["Z", "Ʒ"], "type": "raw"},
+  {"rule": ["aͤ", "ä"], "type": "raw"},
+  {"rule": ["oͤ", "ö"], "type": "raw"},
+  {"rule": ["uͤ", "ü"], "type": "raw"},
+  {"rule": ["✷", "*"], "type": "raw"} 
 ]
