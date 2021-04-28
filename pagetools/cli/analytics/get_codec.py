@@ -6,6 +6,7 @@ import string
 import json
 import csv
 from typing import Union
+import unicodedata as ud
 
 import click
 from lxml import etree
@@ -23,11 +24,13 @@ from lxml import etree
 @click.option("-of", "--output-format", type=click.Choice(["json", "csv", "txt"]), default="csv",
               help="Available result formats.")
 @click.option("-freq", "--frequencies", is_flag=True, default=False, help="Outputs character frequencies.")
+@click.option("-nu", "--normalize-unicode", type=click.Choice(["NFC", "NFD", "NFKC", "NFKD"]), default=None,
+              help="Normalize unicode for both rules and PAGE XML tests.")
 @click.option("--text-output-newline", is_flag=True, default=False,
               help="Inserts new line after every character in txt output. Only applies when frequencies aren't output.")
 @click.option("--verbose/--silent", default=False, help="Choose between verbose or silent output.")
 def get_codec_cli(files, level, index, most_common, output, remove_whitespace, output_format, frequencies,
-                  text_output_newline, verbose):
+                  normalize_unicode, text_output_newline, verbose):
     codec = Counter()
     xpath = build_xpath(level, index)
 
@@ -47,6 +50,10 @@ def get_codec_cli(files, level, index, most_common, output, remove_whitespace, o
             tree = page.tree.getroot()
             for text_equiv in tree.findall(xpath, namespaces=page.get_ns()):
                 text_content = "".join(text_equiv.itertext())
+
+                if normalize_unicode:
+                    text_content = ud.normalize(normalize_unicode, text_content)
+
                 codec.update(clean_text(text_content, remove_whitespace))
 
     codec_dict = {k: v for k, v in codec.most_common(most_common)}
