@@ -61,3 +61,8 @@ def extract_cli(xmls, include, exclude, no_text, image_extension, output, enumer
 
     if zip_output:
         filesystem.zip_files(files)
+
+
+if __name__ == "__main__":
+    extract_cli()
+

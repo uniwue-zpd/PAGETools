@@ -93,3 +93,7 @@ def collect_default_rulesets(remove_default: List[str], add_default: List[str], 
         rules.append(r)
 
     return rules
+
+
+if __name__ == "__main__":
+    regularize_cli()
