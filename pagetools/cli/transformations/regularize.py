@@ -18,7 +18,8 @@ import click
 from lxml import etree
 
 
-default_rulesets = ["various", "quotes", "ligatures_consonantal", "roman_digits", "uvius", "punctuation", "spaces"]
+default_rulesets = ["various", "quotes", "ligatures_consonantal", "ligatures_vocal", "roman_digits", "uvius",
+                    "punctuation", "spaces"]
 
 
 @click.command("regularize",
