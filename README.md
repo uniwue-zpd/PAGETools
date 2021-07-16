@@ -1,4 +1,4 @@
-# PAGETools - WIP
+# PAGETools
 Small collection of [PAGE XML](https://github.com/PRImA-Research-Lab/PAGE-XML) related Python scripts used at the
 [Centre for Philology and Digitality (ZPD), University of Würzburg](https://github.com/uniwue-zpd).
 
