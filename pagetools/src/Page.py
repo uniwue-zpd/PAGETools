@@ -78,8 +78,11 @@ class Page:
 
         return element_data
 
+    def get_text_equivs(self) -> List[etree.Element]:
+        return self.tree.getroot().xpath(".//page:TextEquiv", namespaces=self.ns)
+
     def get_texts(self) -> List[etree.Element]:
-        return [elem for elem in self.tree.xpath(f".//page:Unicode", namespaces=self.ns)]
+        return [elem for elem in self.tree.xpath(".//page:Unicode", namespaces=self.ns)]
 
     def get_text_regions(self) -> List[etree.Element]:
         return [elem for elem in self.tree.findall(".//page:TextRegion", namespaces=self.ns)]
