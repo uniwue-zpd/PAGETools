@@ -137,3 +137,18 @@ Options:
   --help                          Show this message and exit.
 
 ```
+### Get text count
+```
+Usage: pagetools get_text_count [OPTIONS] FILES...
+
+  Returns the amount of text equiv elements in certain elements for certain
+  indices.
+
+Options:
+  -e, --element [TextRegion|TextLine|Word]
+  -i, --index TEXT                [required]
+  -so, --stats-out TEXT           Output directory for detailed stats csv
+                                  file.
+  --help                          Show this message and exit.
+
+```
