@@ -17,6 +17,7 @@ from lxml import etree
               help="Removes all XML files without any text content without the specified index.")
 @click.option("-d", "--dry-run", is_flag=True, help="Only prints cullable files to output.")
 def cull_cli(files: List[str], xml: bool, xml_extension: List[str], text: bool, text_index: List[int], dry_run: bool):
+    # TODO: finish cull
     files = filesystem.collect_cullable_files(files, xml_extension)
 
     for file in files:

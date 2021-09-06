@@ -10,7 +10,7 @@ from lxml import etree
 class Page:
     def __init__(self, xml: Path):
         self.filename = xml
-        self.tree = self.get_tree(xml)
+        self.tree = self.get_tree()
         self.ns = self.autoextract_namespace(self.tree)
 
     def get_filename(self) -> Path:
@@ -26,6 +26,9 @@ class Page:
         :param tree:
         :return:
         """
+        if tree is None:
+            return
+
         extracted_ns = tree.xpath('namespace-uri(.)')
 
         if extracted_ns.startswith("http://schema.primaresearch.org/PAGE/gts/pagecontent/"):
@@ -33,19 +36,18 @@ class Page:
         else:
             return {}
 
-    @staticmethod
-    def get_tree(file: Path) -> etree.Element:
-        """
-
-        :param file:
-        :return:
-        """
+    def get_tree(self, root: bool = False) -> etree.Element:
         try:
-            return etree.parse(str(file))
-        except etree.XMLSyntaxError as e:
-            raise e
-        except etree.ParseError as e:
-            raise e
+            if self.tree:
+                return self.tree.getroot() if root else self.tree
+        except AttributeError:
+            pass
+
+        try:
+            tree = etree.parse(str(self.filename))
+        except (etree.XMLSyntaxError, etree.ParseError) as e:
+            return None
+        return tree
 
     def get_element_data(self, element_types: Set[str]) -> List[Dict]:
         element_data = []

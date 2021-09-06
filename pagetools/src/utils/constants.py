@@ -15,3 +15,5 @@ extractable_regions = ["TextRegion",
                        "UnknownRegion",
                        "CustomRegion",
                        "TextLine"]
+
+TEXT_COUNT_SUPPORTED_ELEMS = ["TextRegion", "TextLine", "Word"]
