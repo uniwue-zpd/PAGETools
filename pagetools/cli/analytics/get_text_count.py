@@ -3,6 +3,7 @@ from pagetools.src.utils.constants import TEXT_COUNT_SUPPORTED_ELEMS
 
 from pagetools.src.Page import Page
 
+from typing import List
 import csv
 from pathlib import Path
 
@@ -16,7 +17,7 @@ import click
               default=TEXT_COUNT_SUPPORTED_ELEMS)
 @click.option("-i", "--index", multiple=True, required=True)
 @click.option("-so", "--stats-out", help="Output directory for detailed stats csv file.")
-def get_text_count_cli(files: list[str], element: list[str], index: list[str], stats_out: str):
+def get_text_count_cli(files: List[str], element: List[str], index: List[str], stats_out: str):
     # TODO: Needs refactoring. Was implemented fast for a urgent use case.
     counter = 0
     stats = []
@@ -66,7 +67,7 @@ def get_text_count_cli(files: list[str], element: list[str], index: list[str], s
                 stats_writer.writerow([entry["page"], entry["element"], entry["index"], entry["hits"]])
 
 
-def get_index_hits(index: list[str], stats: list[dict]) -> list[tuple]:
+def get_index_hits(index: List[str], stats: List[dict]) -> List[tuple]:
     idx_hits = []
     for idx in index:
         counter = 0
@@ -77,7 +78,7 @@ def get_index_hits(index: list[str], stats: list[dict]) -> list[tuple]:
     return idx_hits
 
 
-def get_elem_hits(elements: list[str], stats: list[dict]) -> list[tuple]:
+def get_elem_hits(elements: List[str], stats: List[dict]) -> List[tuple]:
     elem_hits = []
     for elem in elements:
         counter = 0
