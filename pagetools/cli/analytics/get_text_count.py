@@ -33,7 +33,7 @@ def get_text_count_cli(files: List[str], element: List[str], index: List[str], s
 
         for elem in element:
             for idx in index:
-                if index == "None":
+                if idx == "None":
                     xpath = f".//page:{elem}/page:TextEquiv[not(@index)]"
                 else:
                     xpath = f'.//page:{elem}/page:TextEquiv[@index="{idx}"]'
