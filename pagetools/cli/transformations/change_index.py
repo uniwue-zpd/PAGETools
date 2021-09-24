@@ -33,7 +33,7 @@ def change_index_cli(xmls: list[str], source: str, target: str, safe: bool):
             for text_equiv in text_equivs:
                 if text_equiv.get("index") == target:
                     text_equiv.getparent().remove(text_equiv)
-                elif text_equiv.get("index") == source:
+                elif (text_equiv.get("index") == source) or (text_equiv.get("index") is None and source == "None"):
                     text_equiv.set("index", target)
 
             if safe:
