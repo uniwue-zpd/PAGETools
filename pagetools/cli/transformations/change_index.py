@@ -4,6 +4,7 @@ from pagetools.src.Page import Page
 
 import shutil
 from pathlib import Path
+from typing import List
 
 import click
 from lxml import etree
@@ -15,7 +16,7 @@ from lxml import etree
 @click.argument("target", required=True, type=str)
 @click.option("-s/-us", "--safe/--unsafe", default=True,
               help="Creates backups of original files before overwriting.")
-def change_index_cli(xmls: list[str], source: str, target: str, safe: bool):
+def change_index_cli(xmls: List[str], source: str, target: str, safe: bool):
     # TODO: Very basic implementation for immediate use, needs refactoring!
     xmls = filesystem.parse_file_input(xmls)
 
