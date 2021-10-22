@@ -79,7 +79,7 @@ def build_xpath(level: str, index: Union[None, int]) -> str:
 
     elem_name = element_names[level]
 
-    xpath = f".//page:{elem_name}/page:TextEquiv" if not index else f".//page:{elem_name}/page:TextEquiv[@index={index}]"
+    xpath = f".//page:{elem_name}/page:TextEquiv" if index is None else f".//page:{elem_name}/page:TextEquiv[@index={index}]"
     return xpath
 
 
