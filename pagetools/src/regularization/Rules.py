@@ -31,8 +31,7 @@ class Rule:
             return text.replace(self.original, self.target)
         elif self.rule_type == "regex":
             return re.sub(self.original, self.target, text)
-        else:
-            return "Rule type not supported."
+        return "Rule type not supported."
 
     def __str__(self):
         return f"{self.original} -> {self.target} ({self.rule_type})"
@@ -81,8 +80,7 @@ class Ruleset:
         if isinstance(other, Ruleset):
             self.rules.extend(other.get_rules())
             return Ruleset(rules=self.rules)
-        else:
-            return NotImplemented
+        return NotImplemented
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -90,5 +88,4 @@ class Ruleset:
     def __eq__(self, ruleset):
         if isinstance(ruleset, Ruleset):
             return self.rules == ruleset.get_rules()
-        else:
-            return NotImplemented
+        return NotImplemented

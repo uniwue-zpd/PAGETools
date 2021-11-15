@@ -92,7 +92,6 @@ def zip_files(files: List[Path]):
     """
 
     :param files:
-    :param archive:
     :return:
     """
     filename = f"{time.strftime('%Y%m%d-%H%M%S')}.zip"

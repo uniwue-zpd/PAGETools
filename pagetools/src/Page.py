@@ -1,6 +1,6 @@
 from pagetools.src.utils.page_processing import string_to_coords
 
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Union
 from pathlib import Path
 
 from lxml import etree
@@ -20,7 +20,7 @@ class Page:
         return self.ns
 
     @staticmethod
-    def autoextract_namespace(tree: etree.Element) -> Dict[str, str]:
+    def autoextract_namespace(tree: etree.Element) -> Union[None, Dict[str, str]]:
         """
 
         :param tree:
@@ -33,8 +33,7 @@ class Page:
 
         if extracted_ns.startswith("http://schema.primaresearch.org/PAGE/gts/pagecontent/"):
             return {"page": extracted_ns}
-        else:
-            return {}
+        return {}
 
     def get_tree(self, root: bool = False) -> etree.Element:
         try:
