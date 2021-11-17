@@ -10,7 +10,7 @@ from pathlib import Path
 import click
 
 
-@click.command("get_text_count",
+@click.command("get-text-count",
                help="Returns the amount of text equiv elements in certain elements for certain indices.")
 @click.argument("files", nargs=-1, required=True)
 @click.option("-e", "--element", multiple=True, type=click.Choice(TEXT_COUNT_SUPPORTED_ELEMS),

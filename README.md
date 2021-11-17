@@ -112,7 +112,7 @@ Options:
 ### Analytics
 #### Get Codec
 ```
-Usage: pagetools get_codec [OPTIONS] FILES...
+Usage: pagetools get-codec [OPTIONS] FILES...
 
   Retrieves codec of PAGE XML files.
 
@@ -139,7 +139,7 @@ Options:
 ```
 ### Get text count
 ```
-Usage: pagetools get_text_count [OPTIONS] FILES...
+Usage: pagetools get-text-count [OPTIONS] FILES...
 
   Returns the amount of text equiv elements in certain elements for certain
   indices.

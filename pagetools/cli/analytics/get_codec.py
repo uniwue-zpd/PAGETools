@@ -12,7 +12,7 @@ import click
 from lxml import etree
 
 
-@click.command("get_codec", help="Retrieves codec of PAGE XML files.")
+@click.command("get-codec", help="Retrieves codec of PAGE XML files.")
 @click.argument("files", nargs=-1, required=True)
 @click.option("-l", "--level", type=click.Choice(["region", "line", "word", "glyph"]), default="line")
 @click.option("-idx", "--index", default=None, type=int,
