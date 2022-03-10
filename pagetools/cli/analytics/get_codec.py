@@ -14,7 +14,8 @@ from lxml import etree
 
 @click.command("get-codec", help="Retrieves codec of PAGE XML files.")
 @click.argument("files", nargs=-1, required=True)
-@click.option("-l", "--level", type=click.Choice(["region", "line", "word", "glyph"]), default="line")
+@click.option("-l", "--level", type=click.Choice(["region", "line", "word", "glyph"]), default="line",
+              show_default=True)
 @click.option("-idx", "--index", default=None, type=int,
               help="Considers only text from TextEquiv elements with a certain index.")
 @click.option("-mc", "--most-common", default=None, type=int,
