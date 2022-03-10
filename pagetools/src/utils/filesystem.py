@@ -34,12 +34,12 @@ def get_suffix(path: Path) -> str:
     return f".{'.'.join(path.name.split('.')[1:])}"
 
 
-def collect_cullable_files(files: List[str], xml_extension: List[str]) -> Dict[Path, List[Path]]:
-    # TODO: Finish cull
-    cullable_files = []
-
-    for file in files:
-        pass
+# def collect_cullable_files(files: List[str], xml_extension: List[str]) -> Dict[Path, List[Path]]:
+#     # TODO: Finish cull
+#     cullable_files = []
+#
+#     for file in files:
+#         pass
 
 
 def parse_file_input(files: List[str]) -> List[Path]:
