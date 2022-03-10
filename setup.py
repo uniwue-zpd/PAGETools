@@ -12,7 +12,7 @@ setuptools.setup(
     description="Toolset to perform various operations on PAGE XML datasets",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/maxnth/PAGETools",
+    url="https://github.com/uniwuezpd/PAGETools",
     packages=setuptools.find_packages(),
     install_requires=[
         "opencv-python",
