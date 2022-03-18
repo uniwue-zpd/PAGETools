@@ -21,6 +21,7 @@ setuptools.setup(
         "click",
         "deskew",
         "regex",
+        "pytest",
         "importlib_resources ; python_version<'3.7'",
     ],
     classifiers=[
