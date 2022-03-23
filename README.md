@@ -16,6 +16,8 @@ pip install pagetools
 ```
 To install the package from source, clone this repository and run inside the project directory
 ```bash
+python -m venv VENV_NAME
+source VENV_NAME/bin/activate
 pip install .
 ```
 
