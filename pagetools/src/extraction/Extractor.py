@@ -1,7 +1,7 @@
 from pagetools.src.Page import Page
 from pagetools.src.Image import Image, ProcessedImage
 from pagetools.src.utils import filesystem
-from pagetools.src.utils.constants import extractable_regions
+from pagetools.src.utils.constants import EXTRACTABLE_REGIONS
 
 from pathlib import Path
 from typing import List, Iterator, Set, Tuple
@@ -40,14 +40,14 @@ class Extractor:
 
     @staticmethod
     def build_element_list(include: List[str], exclude: List[str]) -> Set[str]:
-        element_list = extractable_regions.copy()
+        element_list = EXTRACTABLE_REGIONS.copy()
         if "*" in exclude:
             element_list.clear()
         elif exclude:
             for element_type in exclude:
                 element_list.remove(element_type)
         if "*" in include:
-            element_list = extractable_regions.copy()
+            element_list = EXTRACTABLE_REGIONS.copy()
         elif include:
             element_list.extend([elem_type for elem_type in include if elem_type != "*"])
         return element_list

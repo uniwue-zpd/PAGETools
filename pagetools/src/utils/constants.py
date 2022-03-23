@@ -1,4 +1,4 @@
-extractable_regions = ["TextRegion",
+EXTRACTABLE_REGIONS = ["TextRegion",
                        "ImageRegion",
                        "LineDrawingRegion",
                        "GraphicRegion",

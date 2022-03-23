@@ -1,11 +1,11 @@
 from pagetools.src.utils import filesystem
 from pagetools.src.extraction.Extractor import Extractor
-from pagetools.src.utils.constants import extractable_regions
+from pagetools.src.utils.constants import EXTRACTABLE_REGIONS
 
 import click
 from pathlib import Path
 
-available_regions = extractable_regions.copy()
+available_regions = EXTRACTABLE_REGIONS.copy()
 available_regions.append("*")
 
 
