@@ -19,6 +19,7 @@ setuptools.setup(
         "lxml",
         "numpy",
         "click",
+        "flake8",
         "deskew",
         "regex",
         "pytest",
