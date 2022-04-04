@@ -1,4 +1,7 @@
 # use this
+import pathlib
+import stat
+
 import click
 import lxml
 
@@ -6,30 +9,30 @@ import lxml
 import argparse
 
 # keep this
-import os.path
+#import os.path
 import time
 import glob
-import os.path
+from pathlib import Path
 
 
-def check_dest(dest):
-    """
-    Checks if the destination is legitimate.
-    Creates directory, if it does not exist yet
-    Adds seperator if dest argument does not include it yet
-    """
-    if not os.path.exists(dest):
-        print(dest + " dir not found, creating directory")
-        os.mkdir(dest)
+def check_dest(dest: Path):
+    """Checks if the destination is legitimate and creates directory, if it does not exist yet"""
+    if not dest.exists():
+        print(str(dest) + " dir not found, creating directory")
+        # dest.parent.chmod(stat.S_IWRITE)
+        print(dest)
+        dest.expanduser()
+        print(dest)
+        Path.mkdir(dest, parents=True, exist_ok=True)
     # Needed?
-    if not dest.endswith(os.path.sep):
-        dest += os.path.sep
+    #if not dest.endswith(os.path.sep):
+    #    dest += os.path.sep
     return dest
 
 
-def strip_path(path):
+def strip_path(path: Path):
     """extracts the basename of path"""
-    return os.path.basename(path)
+    return path.name
 
 
 def get_text(file):
@@ -40,18 +43,20 @@ def get_text(file):
 
 
 class CliOptions:
-    """Object, which includes the meta data"""
+    """Object, which includes the meta data
+    source, image_folder, gt_folder, dest_folder are Path objects
+    """
 
     def __init__(self, creator, source, i_f, gt_f, dest, ext, pred, lines, spacing, border, debug, threads):
         self.creator = creator
-        self.source = source
-        self.image_folder = i_f
+        self.source = Path(source)
+        self.image_folder = Path(i_f)
         if not i_f == source:
             check_dest(self.image_folder)
-        self.gt_folder = gt_f
+        self.gt_folder = Path(gt_f)
         if not gt_f == source:
             check_dest(self.gt_folder)
-        self.dest_folder = check_dest(dest)
+        self.dest_folder = check_dest(Path(dest))
         self.ext = ext
         self.pred = pred
         self.lines = lines
@@ -61,7 +66,7 @@ class CliOptions:
         self.threads = threads
 
         # List of all images in the folder with the desired extension
-        self.imgList = [f for f in sorted(glob.glob(self.image_folder + '*' + self.ext))]
+        self.imgList = [f for f in sorted(glob.glob(str(self.image_folder) + '*' + self.ext))]
         self.gtList = []
         self.nameList = []
         self.matches = []
@@ -71,7 +76,7 @@ class CliOptions:
         pairing = []
         for img in self.imgList:
             img_name = strip_path(img.split('.')[0])
-            self.gtList = [f for f in glob.glob(self.gt_folder + img_name + ".gt.txt")]
+            self.gtList = [f for f in glob.glob(str(self.gt_folder) + img_name + ".gt.txt")]
             if len(self.gtList) > 0:
                 self.nameList.append(img_name)
                 pairing.append(img)
@@ -79,27 +84,26 @@ class CliOptions:
                 pairing.append(gt_filename)
                 pairing.append(get_text(gt_filename))
                 if self.pred:
-                    pred_filelist = [f for f in glob.glob(self.gt_folder + img_name + ".pred.text")]
+                    pred_filelist = [f for f in glob.glob(str(self.gt_folder) + img_name + ".pred.text")]
                     if len(pred_filelist) > 0:
                         pred_filename = pred_filelist[0]
                         pairing.append(pred_filename)
                         pairing.append(get_text(pred_filename))
                     else:
-                        print(
-                            "WARNING: The File " + self.gt_folder + img_name + ".pred.txt could not be found! Omitting line from page")
+                        print("WARNING: The File " + str(self.gt_folder) + img_name + ".pred.txt could not be found! Omitting line from page")
                 self.matches.append(self.pairing.copy())
             else:
                 print(
-                    "WARNING: The File " + self.gt_folder + img_name + ".gt.txt could not be found! Omitting line from page")
+                    "WARNING: The File " + str(self.gt_folder) + img_name + ".gt.txt could not be found! Omitting line from page")
         print("matching files")
 
 
 @click.command()
 @click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML')
-@click.option('-s', '--source_folder', default=os.getcwd(), help='Path to images and GT')
+@click.option('-s', '--source_folder', default=Path.cwd(), help='Path to images and GT')
 @click.option('-i', '--image_folder', default='', help='Path to images')
 @click.option('-gt', '--gt_folder', default='', help='Path to GT')
-@click.option('-d', '--dest_folder', default=os.getcwd() + '/merged/', help='Path to merge objects')
+@click.option('-d', '--dest_folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects')
 @click.option('-e', '--ext', default='.bin.png', help='image extension')
 @click.option('-p', '--pred', default=False, type=bool, help='Set Flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=int, help='lines per page')
@@ -112,6 +116,7 @@ def cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred,
     """Initialises a CLIArgument object, which saves the added cli options."""
     # replace argparse with click
     # self.parser = argparse.ArgumentParser(description='python script to merge GT lines to page images and xml')
+    click.echo("start cli()")
     if image_folder == "":
         image_path = source_folder
     else:
@@ -122,7 +127,9 @@ def cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred,
         gt_path = gt_folder
     option_object = CliOptions(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                                border, debug, threads)
-    return option_object
+    click.echo("object created")
+    option_object.match_files()
+    click.echo("cli() finished")
 
 
 if __name__ == '__main__':
@@ -132,17 +139,26 @@ if __name__ == '__main__':
         options = object with the desired meta data
     """
     tic = time.perf_counter()
-    options = cli(standalone_mode=False)
-    options.match_files()
-
-    click.echo("Programm finished")
+    # options = cli(standalone_mode=False)
+    # options.match_files()
+    click.echo("call cli()")
+    cli()
+    click.echo("\nProgramm finished")
 
 # help(Parser)
 # help(main)
 
-path = "'/home/User/Documents/file.txt'"
+path = "/home/User/Documents/file.txt"
+obj = Path(path)
+print(obj)
+print(obj.name)
+print(obj.is_dir())
+cur_dir = Path.cwd()
+print(cur_dir)
+print(cur_dir.is_dir())
+# print(os.path.basename(path))
 name = strip_path(path.split('.')[0])
 name2 = strip_path(path)
-print(path)
+print("\n" + path)
 print(name)
 print(name2)
