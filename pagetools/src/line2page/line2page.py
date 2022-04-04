@@ -1,19 +1,14 @@
-# use this
-import pathlib
-import stat
-
-import click
 import lxml
 
-#  remove this
-import argparse
-
 # keep this
-#import os.path
 import time
 import glob
 from pathlib import Path
-
+import click
+import sys
+import multiprocessing
+from multiprocessing import Semaphore
+from PIL import Image
 
 def check_dest(dest: Path):
     """Checks if the destination is legitimate and creates directory, if it does not exist yet"""
@@ -40,6 +35,44 @@ def get_text(file):
     with open(file, 'r') as read_file:
         data = read_file.read().rstrip()
         return data
+
+
+def chunks(lst, n):
+    """Yields successive n-sized chunks from lst"""
+    for i in range(0, len(lst), n):
+        yield lst[i: i + n]
+
+
+def name_pages(pages):
+    """
+    returns a list of all objects in pages with pagename followed by a 4-digit pagenumber
+    removed iterative
+    """
+    page_with_name = []
+    pages_with_name = []
+    page_iterator = 0
+    for page in pages:
+        page_iterator += 1
+        name = str(page_iterator).zfill(4)
+        page_with_name.append(page)
+        page_with_name.append(name)
+        pages_with_name.append(page_with_name.copy())
+        page_with_name.clear()
+    return pages_with_name
+
+
+def progress(count, total, status='.'):
+    """displays a progress bar"""
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+    percents = round(100.0 * count / float(total), 1)
+    bar = '█' * filled_len + '_' * (bar_len - filled_len)
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush()
+
+
+def make_page(page_with_name, semaphore):
+    merged =
 
 
 class CliOptions:
@@ -70,6 +103,8 @@ class CliOptions:
         self.gtList = []
         self.nameList = []
         self.matches = []
+        self.spacer = 5
+        self.img_ext = '.nrm.png'
 
     def match_files(self):
         """"""
@@ -96,6 +131,28 @@ class CliOptions:
                 print(
                     "WARNING: The File " + str(self.gt_folder) + img_name + ".gt.txt could not be found! Omitting line from page")
         print("matching files")
+
+
+    def merge_images(self, page):
+        """Merge list of images into one, displayed on top of each other
+        :return: the merged Image object
+        """
+        img_list = []
+        img_width = 0
+        img_height = 0
+        spacer_height = self.spacer * (len(page) - 1)
+        for line in page:
+            image_data = Image.open(line[0])
+            image = image_data.copy()
+            image_data.close()
+            (width, height) = image.size
+            img_width = max(img_width, width)
+            img_height += height
+            img_list.append(image)
+        if 'nrm' not in self.img_ext:
+            result = Image.new('RGB', (img_width + self.border * 2, img_height + self.border * 2 + spacer_height), (255, 255, 255))
+        else:
+            result = Image.new('LA', (img_width + self.border))
 
 
 @click.command()
@@ -129,6 +186,18 @@ def cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred,
                                border, debug, threads)
     click.echo("object created")
     option_object.match_files()
+    pages = list(chunks(option_object.matches, option_object.lines))
+    pages = name_pages(pages)
+
+    i = 0
+    processes = []
+    concurrency = option_object.threads
+    click.echo("Currently using " + str(concurrency) + " Thread(s)")
+    sema = Semaphore(concurrency)
+    for page in pages:
+        sema.acquire()
+        progress(i + 1, len(pages) * 2, "Processing page " + str(i + 1) + " of " + str(len(pages)))
+        processes = multiprocessing.Process(target=)
     click.echo("cli() finished")
 
 
@@ -147,7 +216,7 @@ if __name__ == '__main__':
 
 # help(Parser)
 # help(main)
-
+"""
 path = "/home/User/Documents/file.txt"
 obj = Path(path)
 print(obj)
@@ -162,3 +231,4 @@ name2 = strip_path(path)
 print("\n" + path)
 print(name)
 print(name2)
+"""
