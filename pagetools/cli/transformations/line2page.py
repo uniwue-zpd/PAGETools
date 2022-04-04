@@ -1,8 +1,10 @@
 from pagetools.src.line2page.Line2Page import Line2Page
 
 from pathlib import Path
-
 import click
+import time
+import multiprocessing
+from multiprocessing import Semaphore
 
 
 @click.command("line2page", help="Merges line images and text to combined image with PAGE XML annotation")
@@ -23,9 +25,36 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     image_path = source_folder if not image_folder else image_folder
     gt_path = source_folder if not gt_folder else gt_folder
 
-    option_object = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
-                              border, debug, threads)
-    option_object.match_files()
+    tic = time.perf_counter()
+    opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
+                        border, debug, threads)
+    opt_obj.match_files()
+    click.echo("object created")
+    opt_obj.match_files()
+    pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
+    pages = opt_obj.name_pages(pages)
+
+    i = 0
+    processes = []
+    concurrency = opt_obj.threads
+    click.echo("Currently using " + str(concurrency) + " Thread(s)")
+    sema = Semaphore(concurrency)
+    for page in pages:
+        sema.acquire()
+        opt_obj.progress(i + 1, len(pages) * 2, "Processing page " + str(i + 1) + " of " + str(len(pages)))
+        process = multiprocessing.Process(target=opt_obj.make_page, args=(page, sema,))
+        processes.append(process)
+        process.start()
+        i += 1
+
+    for process in processes:
+        opt_obj.progress(i + 1, len(pages) * 2,
+                         "Finishing page " + str((i + 1) - len(pages)) + " of " + str(len(pages)))
+        process.join()
+        i += 1
+    toc = time.perf_counter()
+    click.echo(f"\nFinished merging in {toc - tic:0.4f} seconds")
+    click.echo("\nPages have been stored at ", opt_obj.dest)
 
 
 if __name__ == '__main__':
