@@ -1,5 +1,4 @@
-from xml.dom import minidom
-
+# Nachfragen
 import lxml
 
 # keep this
@@ -10,6 +9,7 @@ from PIL import Image
 from xml.etree.ElementTree import Element, SubElement
 from xml.etree import ElementTree
 from datetime import datetime
+from xml.dom import minidom
 
 
 class Line2Page:

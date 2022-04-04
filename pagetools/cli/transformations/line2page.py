@@ -9,7 +9,7 @@ from multiprocessing import Semaphore
 
 @click.command("line2page", help="Merges line images and text to combined image with PAGE XML annotation")
 @click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML')
-@click.option('-s', '--source-folder', default=Path.cwd(), help='Path to images and GT')
+@click.option('-s', '--source-folder', required=True, help='Path to images and GT')
 @click.option('-i', '--image-folder', default='', help='Path to images')
 @click.option('-gt', '--gt-folder', default='', help='Path to GT')
 @click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects')
