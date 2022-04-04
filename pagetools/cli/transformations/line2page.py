@@ -1,4 +1,4 @@
-from pagetools.src.line2page.line2page import Line2Page
+from pagetools.src.line2page.Line2Page import Line2Page
 
 from pathlib import Path
 
