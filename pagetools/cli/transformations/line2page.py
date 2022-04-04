@@ -18,8 +18,8 @@ import click
 @click.option('-b', '--border', default=10, type=int, help='Border (in pixel)')
 @click.option('--debug', default=False, help='Prints debug XML')
 @click.option('--threads', default=16, type=int, help='Thread count to be used')
-def cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border, debug,
-        threads):
+def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
+                  debug, threads):
     image_path = source_folder if not image_folder else image_folder
     gt_path = source_folder if not gt_folder else gt_folder
 
@@ -29,4 +29,4 @@ def cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred,
 
 
 if __name__ == '__main__':
-    cli()
+    line2page_cli()
