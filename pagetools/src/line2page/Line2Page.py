@@ -52,9 +52,7 @@ class Line2Page:
         if not dest.exists():
             print(str(dest) + " dir not found, creating directory")
             # dest.parent.chmod(stat.S_IWRITE)
-            print(dest)
             dest.expanduser()
-            print(dest)
             Path.mkdir(dest, parents=True, exist_ok=True)
         # Needed?
         # if not dest.endswith(os.path.sep):
@@ -117,14 +115,14 @@ class Line2Page:
 
     def make_page(self, page_with_name, semaphore):
         merged = self.merge_images(page_with_name[0])
-        merged.save(self.dest_folder + self.strip_path(page_with_name[1]) + self.img_ext)
+        merged.save(str(self.dest_folder) + self.strip_path(page_with_name[1]) + self.img_ext)
         merged.close()
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_ext, merged.height, merged.width)
         if self.debug:
             print(self.prettify(xml_tree))
         xml = ElementTree.tostring(xml_tree, 'utf8', 'xml')
         xml_tree.clear()
-        myfile = open(self.dest + self.strip_path(page_with_name[1]) + ".xml", "wb")
+        myfile = open(str(self.dest_folder) + self.strip_path(page_with_name[1]) + ".xml", "wb")
         myfile.write(xml)
         myfile.close()
         semaphore.release()
@@ -133,7 +131,7 @@ class Line2Page:
         """Pairs image with gt-Text and saves it in pairing"""
         pairing = []
         for img in self.imgList:
-            img_name = self.strip_path(img.split('.')[0])
+            img_name = self.strip_path(Path(img.split('.')[0]))
             self.gtList = [f for f in glob.glob(str(self.gt_folder) + img_name + ".gt.txt")]
             if len(self.gtList) > 0:
                 self.nameList.append(img_name)
@@ -150,11 +148,13 @@ class Line2Page:
                         pairing.append(self.get_text(pred_filename))
                     else:
                         print(
-                            f"WARNING: The File {str(self.gt_folder)} {img_name}.pred.txt could not be found! Omitting line from page")
+                            f"WARNING: The File {str(self.gt_folder)} {img_name}.pred.txt could not be found! "
+                            f"Omitting line from page")
                 self.matches.append(pairing.copy())
             else:
                 print(
-                    f"WARNING: The File {str(self.gt_folder)} {img_name}.gt.txt could not be found! Omitting line from page")
+                    f"WARNING: The File {str(self.gt_folder)} {img_name}.gt.txt could not be found! Omitting line "
+                    f"from page")
 
     def merge_images(self, page):
         """Merge list of images into one, displayed on top of each other

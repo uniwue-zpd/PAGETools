@@ -29,7 +29,6 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                         border, debug, threads)
     opt_obj.match_files()
-    click.echo("object created")
     opt_obj.match_files()
     pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
     pages = opt_obj.name_pages(pages)
@@ -54,7 +53,7 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
         i += 1
     toc = time.perf_counter()
     click.echo(f"\nFinished merging in {toc - tic:0.4f} seconds")
-    click.echo("\nPages have been stored at ", opt_obj.dest)
+    click.echo("\nPages have been stored at " + str(opt_obj.dest_folder))
 
 
 if __name__ == '__main__':
