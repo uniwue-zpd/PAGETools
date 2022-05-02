@@ -29,7 +29,6 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                         border, debug, threads)
     opt_obj.match_files()
-    opt_obj.match_files()
     pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
     pages = opt_obj.name_pages(pages)
 
