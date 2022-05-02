@@ -20,6 +20,8 @@ class Line2Page:
     def __init__(self, creator, source, i_f, gt_f, dest, ext, pred, lines, spacing, border, debug, threads):
         self.creator = creator
         self.source = Path(source)
+        if not self.source.is_dir():
+            raise Exception("Source folder " + str(self.source.resolve()) + " does not exist")
         self.image_folder = Path(i_f)
         if not i_f == source:
             self.check_dest(self.image_folder)
@@ -36,7 +38,8 @@ class Line2Page:
         self.threads = threads
 
         # List of all images in the folder with the desired extension
-        self.imgList = [f for f in sorted(glob.glob(str(self.image_folder) + '*' + self.ext))]
+        print("Image Folder: " + str(self.image_folder))
+        self.imgList = [f for f in sorted(glob.glob(str(Path(Path.cwd(), self.image_folder)) + '/*' + self.ext))]
         self.gtList = []
         self.nameList = []
         self.matches = []
@@ -46,8 +49,14 @@ class Line2Page:
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15 ' \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15/pagecontent.xsd'
 
+        self.print_self()
+
+
     @staticmethod
     def check_dest(dest: Path):
+        # remove
+        print("Checking destination")
+
         """Checks if the destination is legitimate and creates directory, if it does not exist yet"""
         if not dest.exists():
             print(str(dest) + " dir not found, creating directory")
@@ -66,6 +75,8 @@ class Line2Page:
 
     @staticmethod
     def get_text(file):
+        # remove
+        print("get_text(" + file + ")")
         """extracts the text from inside the file"""
         with open(file, 'r') as read_file:
             data = read_file.read().rstrip()
@@ -73,12 +84,16 @@ class Line2Page:
 
     @staticmethod
     def chunks(lst, n):
+        # remove
+        print("chunks(" + str(lst) + ", " + str(n) + ")")
         """Yields successive n-sized chunks from lst"""
         for i in range(0, len(lst), n):
             yield lst[i: i + n]
 
     @staticmethod
     def name_pages(pages):
+        # remove
+        print("name_pages(" + str(pages) + ")")
         """
         returns a list of all objects in pages with pagename followed by a 4-digit pagenumber
         removed iterative
@@ -97,6 +112,9 @@ class Line2Page:
 
     @staticmethod
     def progress(count, total, status='.'):
+        # remove
+        print("progress bar")
+
         """displays a progress bar"""
         bar_len = 60
         filled_len = int(round(bar_len * count / float(total)))
@@ -107,6 +125,9 @@ class Line2Page:
 
     @staticmethod
     def prettify(elem):
+        # remove
+        print("prettify")
+
         """Return a pretty-printed XML string for the Element.
         """
         rough_string = ElementTree.tostring(elem, 'utf-8')
@@ -114,6 +135,9 @@ class Line2Page:
         return reparsed.toprettyxml("  ")
 
     def make_page(self, page_with_name, semaphore):
+        # remove
+        print("make_page(" + str(page_with_name) + ", " + str(semaphore) + ")")
+
         merged = self.merge_images(page_with_name[0])
         merged.save(str(self.dest_folder) + self.strip_path(page_with_name[1]) + self.img_ext)
         merged.close()
@@ -128,6 +152,9 @@ class Line2Page:
         semaphore.release()
 
     def match_files(self):
+        # remove
+        print("match_files()")
+
         """Pairs image with gt-Text and saves it in pairing"""
         pairing = []
         for img in self.imgList:
@@ -155,8 +182,12 @@ class Line2Page:
                 print(
                     f"WARNING: The File {str(self.gt_folder)} {img_name}.gt.txt could not be found! Omitting line "
                     f"from page")
+        # remove
+        print("New Name_list - " + str(self.nameList))
 
     def merge_images(self, page):
+        # remove
+        print("merge_images(" + str(page) + ")")
         """Merge list of images into one, displayed on top of each other
         :return: the merged Image object
         """
@@ -186,6 +217,9 @@ class Line2Page:
         return result
 
     def build_xml(self, line_list, img_name, img_height, img_width):
+        # remove
+        print("build_xml(" + str(line_list) + ", " + str(img_name) + ", " + str(img_height) + ", " + str(img_width) + ")")
+
         """Builds PageXML from list of images, with txt files corresponding to each one of them
         :return: the built PageXml[.xml] file
         """
@@ -242,9 +276,35 @@ class Line2Page:
         return pcgts
 
     def make_coord_string(self, previous_lower_left, line_width, line_height):
+        # remove
+        print("make_coord_string(" + str(previous_lower_left) + ", " + str(line_width) + ", " + str(line_height) + ")")
+
         b = str(self.border)
         p = str(previous_lower_left)
         w = str(line_width + self.border)
         h = str(line_height + previous_lower_left)
         coord_string = b + ',' + p + ' ' + b + "," + h + ' ' + w + ',' + h + ' ' + w + ',' + p
         return coord_string
+
+    def print_self(self):
+        """Prints all info saved in the object"""
+        # remove
+        print("Object_info:")
+        print("Creator " + str(self.creator))
+        print("Image_Folder - " + str(self.image_folder))
+        print("GT_Folder - " + str(self.gt_folder))
+        print("Dest_Folder - " + str(self.dest_folder))
+        print("Ext - " + str(self.ext))
+        print("pred - " + str(self.pred))
+        print("Lines - " + str(self.lines))
+        print("Spacing - " + str(self.line_spacing))
+        print("Border - " + str(self.border))
+        print("Debug - " + str(self.debug))
+        print("Threads - " + str(self.threads))
+
+        print("Image_List - " + str(self.imgList))
+        print("gt_List - " + str(self.gtList))
+        print("Name_list - " + str(self.nameList))
+        print("Matches - " + str(self.matches))
+        print("Spacer - " + str(self.spacer))
+        print("\n")

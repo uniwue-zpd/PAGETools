@@ -55,6 +55,9 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     click.echo(f"\nFinished merging in {toc - tic:0.4f} seconds")
     click.echo("\nPages have been stored at " + str(opt_obj.dest_folder))
 
+    # remove
+    # opt_obj.print_self()
+
 
 if __name__ == '__main__':
     line2page_cli()
