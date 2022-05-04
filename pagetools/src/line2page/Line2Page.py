@@ -116,6 +116,7 @@ class Line2Page:
             page_with_name.append(name)
             pages_with_name.append(page_with_name.copy())
             page_with_name.clear()
+        # print("Pages: " + str(pages_with_name)) # remove
         return pages_with_name
 
     @staticmethod
@@ -164,8 +165,8 @@ class Line2Page:
         print("match_files()")
 
         """Pairs image with gt-Text and saves it in pairing"""
-        pairing = []
         for img in self.imgList:
+            pairing = []
             img_name = self.strip_path(Path(img.split('.')[0]))
             self.gtList = [f for f in glob.glob(str(self.gt_folder) + "/" + img_name + ".gt.txt")]
             # print("Gt-List: " + str(self.gtList))
@@ -193,6 +194,8 @@ class Line2Page:
                     f"from page")
         # remove
         # print("New Name_list - " + str(self.nameList))
+        # print("Pairing: " + str(pairing))
+        # print("Matches: " + str(self.matches))
 
     def merge_images(self, page):
         # remove
@@ -206,6 +209,8 @@ class Line2Page:
         spacer_height = self.spacer * (len(page) - 1)
         for line in page:
             image_data = Image.open(line[0])
+            # print("line: " + str(line))
+            # print("Image Data: " + str(image_data)) #remove
             image = image_data.copy()
             image_data.close()
             (width, height) = image.size

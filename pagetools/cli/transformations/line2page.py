@@ -29,14 +29,17 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                         border, debug, threads)
     opt_obj.match_files()
+    print("Matches: " + str(opt_obj.matches))
     pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
     pages = opt_obj.name_pages(pages)
+    # click.echo("Pages: " + str(pages))
 
     i = 0
     processes = []
     concurrency = opt_obj.threads
     click.echo("Currently using " + str(concurrency) + " Thread(s)")
     sema = Semaphore(concurrency)
+    # click.echo("Pages: " + str(pages)) # remove
     for page in pages:
         sema.acquire()
         opt_obj.progress(i + 1, len(pages) * 2, "Processing page " + str(i + 1) + " of " + str(len(pages)))
