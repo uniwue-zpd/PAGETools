@@ -22,19 +22,27 @@ class Line2Page:
         self.source = self.check_absolute(Path(source))
         if not self.source.is_dir():
             raise Exception("Source folder " + str(self.source.resolve()) + " does not exist")
-        self.image_folder = self.check_absolute(Path(i_f))
-        if not i_f == source:
+        if i_f == source or i_f is "":
+            self.image_folder = self.source
+        else:
+            self.image_folder = self.check_absolute(Path(i_f))
             self.check_dest(self.image_folder)
-        self.gt_folder = self.check_absolute(Path(gt_f))
-        if not gt_f == source:
+        if gt_f == str(self.source) or gt_f == '':
+            self.gt_folder = self.source
+        else:
+            self.gt_folder = self.check_absolute(Path(gt_f))
             self.check_dest(self.gt_folder)
-        self.dest_folder = self.check_dest(self.check_absolute(Path(dest)))
+
+        self.dest_folder = self.check_dest(self.check_absolute(Path(dest)), True)
         self.ext = ext
         self.pred = pred
         self.lines = lines
         self.line_spacing = spacing
         self.border = border
-        self.debug = debug
+        if debug == "True" or debug == "true" or debug == "1":
+            self.debug = True
+        else:
+            self.debug = False
         self.threads = threads
 
         # List of all images in the folder with the desired extension
@@ -53,15 +61,14 @@ class Line2Page:
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15 ' \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15/pagecontent.xsd'
 
-        # self.print_self()
+        self.print_self()
 
     @staticmethod
-    def check_dest(dest: Path):
-        """Checks if the destination is legitimate and creates directory, if non-existent"""
-        if not dest.is_dir():
-            print(str(dest) + " dir not found, creating directory")
-            dest.expanduser()
-            Path.mkdir(dest, parents=True, exist_ok=True)
+    def create_dir(dest: Path):
+        """Creates a directory on the given Path"""
+        dest.expanduser()
+        Path.mkdir(dest, parents=True, exist_ok=True)
+        print(str(dest) + " directory created")
         return dest
 
     @staticmethod
@@ -116,6 +123,14 @@ class Line2Page:
         rough_string = ElementTree.tostring(elem, 'utf-8')
         reparsed = minidom.parseString(rough_string)
         return reparsed.toprettyxml("  ")
+
+    def check_dest(self, dest: Path, create=False):
+        """Checks if the destination is legitimate and creates directory, if create is True"""
+        if not dest.is_dir():
+            print("Directory " + str(dest) + " not found")
+            if create:
+                return self.create_dir(dest)
+        return dest
 
     def make_page(self, page_with_name, semaphore):
         """Creates img and corresponding xml of a page"""
@@ -262,6 +277,7 @@ class Line2Page:
         # remove
         print("Object_info:")
         print("Creator " + str(self.creator))
+        print("Source_Folder - " + str(self.source))
         print("Image_Folder - " + str(self.image_folder))
         print("GT_Folder - " + str(self.gt_folder))
         print("Dest_Folder - " + str(self.dest_folder))
@@ -273,7 +289,7 @@ class Line2Page:
         print("Debug - " + str(self.debug))
         print("Threads - " + str(self.threads))
 
-        print("Image_List - " + str(self.imgList))
+        # print("Image_List - " + str(self.imgList))
         print("gt_List - " + str(self.gtList))
         print("Name_list - " + str(self.nameList))
         print("Matches - " + str(self.matches))
