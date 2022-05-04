@@ -13,22 +13,22 @@ from xml.dom import minidom
 
 
 class Line2Page:
-    """Object, which includes the meta data
+    """Object, which stores meta data
     source, image_folder, gt_folder, dest_folder are Path objects
     """
 
     def __init__(self, creator, source, i_f, gt_f, dest, ext, pred, lines, spacing, border, debug, threads):
         self.creator = creator
-        self.source = Path(self.check_absolute(source))
+        self.source = self.check_absolute(Path(source))
         if not self.source.is_dir():
             raise Exception("Source folder " + str(self.source.resolve()) + " does not exist")
-        self.image_folder = Path(self.check_absolute(i_f))
+        self.image_folder = self.check_absolute(Path(i_f))
         if not i_f == source:
             self.check_dest(self.image_folder)
-        self.gt_folder = Path(self.check_absolute(gt_f))
+        self.gt_folder = self.check_absolute(Path(gt_f))
         if not gt_f == source:
             self.check_dest(self.gt_folder)
-        self.dest_folder = self.check_dest(Path(self.check_absolute(dest)))
+        self.dest_folder = self.check_dest(self.check_absolute(Path(dest)))
         self.ext = ext
         self.pred = pred
         self.lines = lines
@@ -43,48 +43,37 @@ class Line2Page:
         self.nameList = []
         self.matches = []
         self.spacer = 5
-        self.img_ext = '.nrm.png'
+
+        # Extension strings used
+        self.gt_suffix = ".gt.txt"
+        self.pred_suffix = "pred.text"
+        self.img_suffix = '.nrm.png'
+
         self.xmlSchemaLocation = \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15 ' \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15/pagecontent.xsd'
 
         # self.print_self()
 
-
     @staticmethod
     def check_dest(dest: Path):
-        # remove
-        print("Checking destination")
-
-        """Checks if the destination is legitimate and creates directory, if it does not exist yet"""
-        if not dest.exists():
+        """Checks if the destination is legitimate and creates directory, if non-existent"""
+        if not dest.is_dir():
             print(str(dest) + " dir not found, creating directory")
-            # dest.parent.chmod(stat.S_IWRITE)
             dest.expanduser()
             Path.mkdir(dest, parents=True, exist_ok=True)
-        # Needed?
-        # if not dest.endswith(os.path.sep):
-        #    dest += os.path.sep
         return dest
 
     @staticmethod
-    def check_absolute(folder: str):
-        """Checks if the given Path is absolute, if not: adds cwd()"""
-        if folder.startswith("/"):
+    def check_absolute(folder: Path):
+        """Checks if the given Path is absolute, if not it makes it absolute"""
+        if folder.is_absolute():
             return folder
         else:
-            return str(Path.cwd()) + "/" + folder
-
-    @staticmethod
-    def strip_path(path: Path):
-        """extracts the basename of path"""
-        # check if it needs to be a path
-        return path.name
+            return Path.cwd().joinpath(folder)
 
     @staticmethod
     def get_text(file):
-        # remove
-        # print("get_text(" + file + ")")
         """extracts the text from inside the file"""
         with open(file, 'r') as read_file:
             data = read_file.read().rstrip()
@@ -92,20 +81,13 @@ class Line2Page:
 
     @staticmethod
     def chunks(lst, n):
-        # remove
-        # print("chunks(" + str(lst) + ", " + str(n) + ")")
         """Yields successive n-sized chunks from lst"""
         for i in range(0, len(lst), n):
             yield lst[i: i + n]
 
     @staticmethod
     def name_pages(pages):
-        # remove
-        # print("name_pages(" + str(pages) + ")")
-        """
-        returns a list of all objects in pages with pagename followed by a 4-digit pagenumber
-        removed iterative
-        """
+        """ returns a list of all objects in pages with pagename followed by a 4-digit pagenumber """
         page_with_name = []
         pages_with_name = []
         page_iterator = 0
@@ -116,14 +98,10 @@ class Line2Page:
             page_with_name.append(name)
             pages_with_name.append(page_with_name.copy())
             page_with_name.clear()
-        # print("Pages: " + str(pages_with_name)) # remove
         return pages_with_name
 
     @staticmethod
     def progress(count, total, status='.'):
-        # remove
-        # print("progress bar")
-
         """displays a progress bar"""
         bar_len = 60
         filled_len = int(round(bar_len * count / float(total)))
@@ -134,42 +112,32 @@ class Line2Page:
 
     @staticmethod
     def prettify(elem):
-        # remove
-        # print("prettify")
-
-        """Return a pretty-printed XML string for the Element.
-        """
+        """Return a pretty-printed XML string for the Element."""
         rough_string = ElementTree.tostring(elem, 'utf-8')
         reparsed = minidom.parseString(rough_string)
         return reparsed.toprettyxml("  ")
 
     def make_page(self, page_with_name, semaphore):
-        # remove
-        # print("make_page(" + str(page_with_name) + ", " + str(semaphore) + ")")
-
+        """Creates img and corresponding xml of a page"""
         merged = self.merge_images(page_with_name[0])
-        merged.save(str(self.dest_folder) + "/" + self.strip_path(Path(page_with_name[1])) + self.img_ext)
+        merged.save(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix)
         merged.close()
-        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_ext, merged.height, merged.width)
+        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width)
         if self.debug:
             print(self.prettify(xml_tree))
         xml = ElementTree.tostring(xml_tree, 'utf8', 'xml')
         xml_tree.clear()
-        myfile = open(str(self.dest_folder) + "/" + self.strip_path(Path(page_with_name[1])) + ".xml", "wb")
+        myfile = open(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + ".xml", "wb")
         myfile.write(xml)
         myfile.close()
         semaphore.release()
 
     def match_files(self):
-        # remove
-        print("match_files()")
-
-        """Pairs image with gt-Text and saves it in pairing"""
+        """Pairs image with gt-Text and adds the pairing to matches"""
         for img in self.imgList:
             pairing = []
-            img_name = self.strip_path(Path(img.split('.')[0]))
-            self.gtList = [f for f in glob.glob(str(self.gt_folder) + "/" + img_name + ".gt.txt")]
-            # print("Gt-List: " + str(self.gtList))
+            img_name = Path(img.split('.')[0]).name
+            self.gtList = [f for f in glob.glob(str(self.gt_folder.joinpath(img_name)) + self.gt_suffix)]
             if len(self.gtList) > 0:
                 self.nameList.append(img_name)
                 pairing.append(img)
@@ -178,29 +146,24 @@ class Line2Page:
                 pairing.append(self.get_text(gt_filename))
 
                 if self.pred:
-                    pred_filelist = [f for f in glob.glob(str(self.gt_folder) + "/" + img_name + ".pred.text")]
+                    pred_filelist = [f for f in glob.glob(str(self.gt_folder.joinpath(img_name)) + self.pred_suffix)]
                     if len(pred_filelist) > 0:
                         pred_filename = pred_filelist[0]
                         pairing.append(pred_filename)
                         pairing.append(self.get_text(pred_filename))
                     else:
                         print(
-                            f"WARNING: The File {str(self.gt_folder)} {img_name}.pred.txt could not be found! "
+                            f"WARNING: The File {str(self.gt_folder)} {img_name}{self.pred_suffix} could not be found! "
                             f"Omitting line from page")
                 self.matches.append(pairing.copy())
             else:
                 print(
-                    f"WARNING: The File {str(self.gt_folder)} {img_name}.gt.txt could not be found! Omitting line "
+                    f"WARNING: The File {str(self.gt_folder)} {img_name}{self.gt_suffix} could not be found! Omitting line "
                     f"from page")
-        # remove
-        # print("New Name_list - " + str(self.nameList))
-        # print("Pairing: " + str(pairing))
-        # print("Matches: " + str(self.matches))
 
     def merge_images(self, page):
-        # remove
-        # print("merge_images(" + str(page) + ")")
-        """Merge list of images into one, displayed on top of each other
+        """
+        Merge list of images into one, displayed on top of each other
         :return: the merged Image object
         """
         img_list = []
@@ -209,15 +172,13 @@ class Line2Page:
         spacer_height = self.spacer * (len(page) - 1)
         for line in page:
             image_data = Image.open(line[0])
-            # print("line: " + str(line))
-            # print("Image Data: " + str(image_data)) #remove
             image = image_data.copy()
             image_data.close()
             (width, height) = image.size
             img_width = max(img_width, width)
             img_height += height
             img_list.append(image)
-        if 'nrm' not in self.img_ext:
+        if 'nrm' not in self.img_suffix:
             result = Image.new('RGB', (img_width + self.border * 2, img_height + self.border * 2 + spacer_height),
                                (255, 255, 255))
         else:
@@ -231,10 +192,8 @@ class Line2Page:
         return result
 
     def build_xml(self, line_list, img_name, img_height, img_width):
-        # remove
-        # print("build_xml(" + str(line_list) + ", " + str(img_name) + ", " + str(img_height) + ", " + str(img_width) + ")")
-
-        """Builds PageXML from list of images, with txt files corresponding to each one of them
+        """
+        Builds PageXML from list of images, with txt files corresponding to each one of them
         :return: the built PageXml[.xml] file
         """
         pcgts = Element('PcGts')
@@ -269,7 +228,7 @@ class Line2Page:
         last_bottom = self.border
         for line in line_list:
             text_line = SubElement(text_region, 'TextLine')
-            text_line.set('id', 'r0_l' + str(self.strip_path(Path(line[0])).split('.')[0].zfill(3)))
+            text_line.set('id', 'r0_l' + str(Path(line[0]).name.split('.')[0].zfill(3)))
             i += 1
             line_coords = SubElement(text_line, 'Coords')
             image = Image.open(line[0])
@@ -290,9 +249,7 @@ class Line2Page:
         return pcgts
 
     def make_coord_string(self, previous_lower_left, line_width, line_height):
-        # remove
-        # print("make_coord_string(" + str(previous_lower_left) + ", " + str(line_width) + ", " + str(line_height) + ")")
-
+        """Builds value string, to be incorporated into the xml"""
         b = str(self.border)
         p = str(previous_lower_left)
         w = str(line_width + self.border)
@@ -321,4 +278,9 @@ class Line2Page:
         print("Name_list - " + str(self.nameList))
         print("Matches - " + str(self.matches))
         print("Spacer - " + str(self.spacer))
+
+        print("GT_Suffix - " + str(self.gt_suffix))
+        print("Pred_Suffix - " + str(self.pred_suffix))
+        print("Img_Suffix - " + str(self.img_suffix))
+
         print("\n")
