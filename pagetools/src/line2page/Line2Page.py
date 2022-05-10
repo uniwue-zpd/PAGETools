@@ -20,9 +20,8 @@ class Line2Page:
     def __init__(self, creator, source, i_f, gt_f, dest, ext, pred, lines, spacing, border, debug, threads):
         self.creator = creator
         self.source = self.check_absolute(Path(source))
-        if not self.source.is_dir():
-            raise Exception("Source folder " + str(self.source.resolve()) + " does not exist")
-        if i_f == source or i_f is "":
+        self.check_dest(self.source)
+        if i_f == source or i_f == '':
             self.image_folder = self.source
         else:
             self.image_folder = self.check_absolute(Path(i_f))
@@ -39,22 +38,22 @@ class Line2Page:
         self.lines = lines
         self.line_spacing = spacing
         self.border = border
-        if debug == "True" or debug == "true" or debug == "1":
-            self.debug = True
+        self.debug = debug
+        if threads <= 0:
+            self.threads = 1
+            print(f"Warning: thread-count can not be <0; Setting threads to 1!")
         else:
-            self.debug = False
-        self.threads = threads
+            self.threads = threads
 
         # List of all images in the folder with the desired extension
         self.imgList = [f for f in sorted(glob.glob(str(self.image_folder) + '/*' + self.ext))]
         self.gtList = []
         self.nameList = []
         self.matches = []
-        self.spacer = 5
 
         # Extension strings used
         self.gt_suffix = ".gt.txt"
-        self.pred_suffix = "pred.text"
+        self.pred_suffix = ".pred.txt"
         self.img_suffix = '.nrm.png'
 
         self.xmlSchemaLocation = \
@@ -64,11 +63,15 @@ class Line2Page:
         self.print_self()
 
     @staticmethod
-    def create_dir(dest: Path):
-        """Creates a directory on the given Path"""
-        dest.expanduser()
-        Path.mkdir(dest, parents=True, exist_ok=True)
-        print(str(dest) + " directory created")
+    def check_dest(dest: Path, create=False):
+        """Checks if the destination is legitimate and creates directory, if create is True"""
+        if not dest.is_dir():
+            if create:
+                dest.expanduser()
+                Path.mkdir(dest, parents=True, exist_ok=True)
+                print(str(dest) + " directory created")
+            else:
+                raise Exception(f"Error: {str(dest)} does not exist")
         return dest
 
     @staticmethod
@@ -124,21 +127,13 @@ class Line2Page:
         reparsed = minidom.parseString(rough_string)
         return reparsed.toprettyxml("  ")
 
-    def check_dest(self, dest: Path, create=False):
-        """Checks if the destination is legitimate and creates directory, if create is True"""
-        if not dest.is_dir():
-            print("Directory " + str(dest) + " not found")
-            if create:
-                return self.create_dir(dest)
-        return dest
-
     def make_page(self, page_with_name, semaphore):
         """Creates img and corresponding xml of a page"""
         merged = self.merge_images(page_with_name[0])
         merged.save(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix)
         merged.close()
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width)
-        if self.debug:
+        if self.debug is True:
             print(self.prettify(xml_tree))
         xml = ElementTree.tostring(xml_tree, 'utf8', 'xml')
         xml_tree.clear()
@@ -168,8 +163,8 @@ class Line2Page:
                         pairing.append(self.get_text(pred_filename))
                     else:
                         print(
-                            f"WARNING: The File {str(self.gt_folder)} {img_name}{self.pred_suffix} could not be found! "
-                            f"Omitting line from page")
+                            f"WARNING: The File {self.gt_folder.joinpath(img_name)}{self.pred_suffix} could not be "
+                            f"found! Omitting line from page")
                 self.matches.append(pairing.copy())
             else:
                 print(
@@ -184,7 +179,7 @@ class Line2Page:
         img_list = []
         img_width = 0
         img_height = 0
-        spacer_height = self.spacer * (len(page) - 1)
+        spacer_height = self.line_spacing * (len(page) - 1)
         for line in page:
             image_data = Image.open(line[0])
             image = image_data.copy()
@@ -202,7 +197,7 @@ class Line2Page:
 
         for img in img_list:
             result.paste(img, (self.border, before))
-            before += img.size[1] + self.spacer
+            before += img.size[1] + self.line_spacing
             img.close()
         return result
 
@@ -250,7 +245,7 @@ class Line2Page:
             (width, height) = image.size
             image.close()
             line_coords.set('points', self.make_coord_string(last_bottom, width, height))
-            last_bottom += (height + self.spacer)
+            last_bottom += (height + self.line_spacing)
             line_gt_text = SubElement(text_line, 'TextEquiv')
             line_gt_text.set('index', str(0))
             unicode_gt = SubElement(line_gt_text, 'Unicode')
@@ -276,7 +271,7 @@ class Line2Page:
         """Prints all info saved in the object"""
         # remove
         print("Object_info:")
-        print("Creator " + str(self.creator))
+        print("Creator - " + str(self.creator))
         print("Source_Folder - " + str(self.source))
         print("Image_Folder - " + str(self.image_folder))
         print("GT_Folder - " + str(self.gt_folder))
@@ -293,7 +288,7 @@ class Line2Page:
         print("gt_List - " + str(self.gtList))
         print("Name_list - " + str(self.nameList))
         print("Matches - " + str(self.matches))
-        print("Spacer - " + str(self.spacer))
+        print("Spacer - " + str(self.line_spacing))
 
         print("GT_Suffix - " + str(self.gt_suffix))
         print("Pred_Suffix - " + str(self.pred_suffix))

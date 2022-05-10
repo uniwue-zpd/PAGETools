@@ -18,7 +18,7 @@ from multiprocessing import Semaphore
 @click.option('-l', '--lines', default=20, type=int, help='Lines per page')
 @click.option('-ls', '--line-spacing', default=5, type=int, help='Line spacing (in pixel)')
 @click.option('-b', '--border', default=10, type=int, help='Border (in pixel)')
-@click.option('--debug', default=False, help='Prints debug XML')
+@click.option('--debug', default=False, type=bool, help='Prints debug XML')
 @click.option('--threads', default=16, type=int, help='Thread count to be used')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
                   debug, threads):
