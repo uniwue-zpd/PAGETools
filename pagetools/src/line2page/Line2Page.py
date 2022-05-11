@@ -213,7 +213,7 @@ class Line2Page:
         :return: the built PageXml[.xml] file
         """
         pcgts = Element('PcGts')
-        pcgts.set('xmlns', 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15')
+        pcgts.set('xmlns', 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15')
         pcgts.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
         pcgts.set('xsi:schemaLocation', self.xmlSchemaLocation)
 
