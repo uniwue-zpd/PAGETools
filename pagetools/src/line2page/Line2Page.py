@@ -1,10 +1,13 @@
 # Nachfragen
+import cv2
 import lxml
 
 # keep this
 import glob
 from pathlib import Path
 import sys
+
+import numpy
 from PIL import Image
 from xml.etree.ElementTree import Element, SubElement
 from xml.etree import ElementTree
@@ -57,10 +60,11 @@ class Line2Page:
         self.img_suffix = '.nrm.png'
 
         self.xmlSchemaLocation = \
-            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15 ' \
-            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15/pagecontent.xsd'
+            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15 ' \
+            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd'
 
-        self.print_self()
+        # remove
+        # self.print_self()
 
     @staticmethod
     def check_dest(dest: Path, create=False):
@@ -69,7 +73,7 @@ class Line2Page:
             if create:
                 dest.expanduser()
                 Path.mkdir(dest, parents=True, exist_ok=True)
-                print(str(dest) + " directory created")
+                print(f"{str(dest)} directory created")
             else:
                 raise Exception(f"Error: {str(dest)} does not exist")
         return dest
@@ -181,10 +185,12 @@ class Line2Page:
         img_height = 0
         spacer_height = self.line_spacing * (len(page) - 1)
         for line in page:
-            image_data = Image.open(line[0])
+            # image_data = cv2.imread(line[0])
+            image_data = Image.open(line[0]) # pillow
             image = image_data.copy()
-            image_data.close()
-            (width, height) = image.size
+            image_data.close()  # pillow
+            (width, height) = image.size # pillow
+            # (height, width) = image.shape
             img_width = max(img_width, width)
             img_height += height
             img_list.append(image)
@@ -267,31 +273,24 @@ class Line2Page:
         coord_string = b + ',' + p + ' ' + b + "," + h + ' ' + w + ',' + h + ' ' + w + ',' + p
         return coord_string
 
+    # remove
     def print_self(self):
         """Prints all info saved in the object"""
-        # remove
+
         print("Object_info:")
-        print("Creator - " + str(self.creator))
-        print("Source_Folder - " + str(self.source))
-        print("Image_Folder - " + str(self.image_folder))
-        print("GT_Folder - " + str(self.gt_folder))
-        print("Dest_Folder - " + str(self.dest_folder))
-        print("Ext - " + str(self.ext))
-        print("pred - " + str(self.pred))
-        print("Lines - " + str(self.lines))
-        print("Spacing - " + str(self.line_spacing))
-        print("Border - " + str(self.border))
-        print("Debug - " + str(self.debug))
-        print("Threads - " + str(self.threads))
+        print(f"Creator - {str(self.creator)}")
+        print(f"Source_Folder - {str(self.source)}")
+        print(f"Image_Folder - {str(self.image_folder)}")
+        print(f"GT_Folder - {str(self.gt_folder)}")
+        print(f"Dest_Folder - {str(self.dest_folder)}")
+        print(f"Ext - {str(self.ext)}")
+        print(f"pred - {str(self.pred)}")
+        print(f"Lines - {str(self.lines)}")
+        print(f"Spacing - {str(self.line_spacing)}")
+        print(f"Border - {str(self.border)}")
+        print(f"Debug - {str(self.debug)}")
+        print(f"Threads - {str(self.threads)}")
 
-        # print("Image_List - " + str(self.imgList))
-        print("gt_List - " + str(self.gtList))
-        print("Name_list - " + str(self.nameList))
-        print("Matches - " + str(self.matches))
-        print("Spacer - " + str(self.line_spacing))
-
-        print("GT_Suffix - " + str(self.gt_suffix))
-        print("Pred_Suffix - " + str(self.pred_suffix))
-        print("Img_Suffix - " + str(self.img_suffix))
-
-        print("\n")
+        print(f"GT_Suffix - {str(self.gt_suffix)}")
+        print(f"Pred_Suffix - {str(self.pred_suffix)}")
+        print(f"Img_Suffix - {str(self.img_suffix)}\n")
