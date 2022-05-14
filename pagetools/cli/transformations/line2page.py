@@ -15,11 +15,11 @@ from multiprocessing import Semaphore
 @click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects')
 @click.option('-e', '--ext', default='.bin.png', help='Image extension')
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
-@click.option('-l', '--lines', default=20, type=int, help='Lines per page')
-@click.option('-ls', '--line-spacing', default=5, type=int, help='Line spacing (in pixel)')
-@click.option('-b', '--border', default=10, type=int, help='Border (in pixel)')
+@click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
+@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True), help='Line spacing (in pixel)')
+@click.option('-b', '--border', default=10, type=click.IntRange(min=0,clamp=True), help='Border (in pixel)')
 @click.option('--debug', default=False, type=bool, help='Prints debug XML')
-@click.option('--threads', default=16, type=int, help='Thread count to be used')
+@click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
                   debug, threads):
     image_path = source_folder if not image_folder else image_folder
@@ -35,24 +35,23 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     i = 0
     processes = []
     concurrency = opt_obj.threads
-    click.echo("Currently using " + str(concurrency) + " Thread(s)")
+    click.echo(f"Currently using {str(concurrency)} Thread(s)")
     sema = Semaphore(concurrency)
     for page in pages:
         sema.acquire()
-        opt_obj.progress(i + 1, len(pages) * 2, "Processing page " + str(i + 1) + " of " + str(len(pages)))
+        opt_obj.progress(i + 1, len(pages) * 2, f"Processing page {str(i + 1)} of {str(len(pages))}")
         process = multiprocessing.Process(target=opt_obj.make_page, args=(page, sema,))
         processes.append(process)
         process.start()
         i += 1
 
     for process in processes:
-        opt_obj.progress(i + 1, len(pages) * 2,
-                         "Finishing page " + str((i + 1) - len(pages)) + " of " + str(len(pages)))
+        opt_obj.progress(i + 1, len(pages) * 2, f"Finishing page {str((i + 1) - len(pages))} of {str(len(pages))}")
         process.join()
         i += 1
     toc = time.perf_counter()
     click.echo(f"\nFinished merging in {toc - tic:0.4f} seconds")
-    click.echo("\nPages have been stored at " + str(opt_obj.dest_folder))
+    click.echo(f"\nPages have been stored at {str(opt_obj.dest_folder)}")
 
 
 if __name__ == '__main__':

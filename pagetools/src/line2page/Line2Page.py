@@ -14,39 +14,34 @@ from xml.etree import ElementTree
 from datetime import datetime
 from xml.dom import minidom
 
+import lxml
 
 class Line2Page:
     """Object, which stores meta data
     source, image_folder, gt_folder, dest_folder are Path objects
     """
 
-    def __init__(self, creator, source, i_f, gt_f, dest, ext, pred, lines, spacing, border, debug, threads):
+    def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
+                 debug, threads):
         self.creator = creator
-        self.source = self.check_absolute(Path(source))
-        self.check_dest(self.source)
-        if i_f == source or i_f == '':
+        self.source = self.check_dest(Path(source).resolve())
+        if image_folder == source or image_folder:
             self.image_folder = self.source
         else:
-            self.image_folder = self.check_absolute(Path(i_f))
-            self.check_dest(self.image_folder)
-        if gt_f == str(self.source) or gt_f == '':
+            self.image_folder = self.check_dest(Path(image_folder).resolve())
+        if gt_folder == str(self.source) or gt_folder:
             self.gt_folder = self.source
         else:
-            self.gt_folder = self.check_absolute(Path(gt_f))
-            self.check_dest(self.gt_folder)
+            self.gt_folder = self.check_dest(Path(gt_folder).resolve())
 
-        self.dest_folder = self.check_dest(self.check_absolute(Path(dest)), True)
+        self.dest_folder = self.check_dest(Path(destination_folder).resolve(), True)
         self.ext = ext
         self.pred = pred
         self.lines = lines
         self.line_spacing = spacing
         self.border = border
         self.debug = debug
-        if threads <= 0:
-            self.threads = 1
-            print(f"Warning: thread-count can not be <0; Setting threads to 1!")
-        else:
-            self.threads = threads
+        self.threads = threads
 
         # List of all images in the folder with the desired extension
         self.imgList = [f for f in sorted(glob.glob(str(self.image_folder) + '/*' + self.ext))]
@@ -67,24 +62,16 @@ class Line2Page:
         # self.print_self()
 
     @staticmethod
-    def check_dest(dest: Path, create=False):
+    def check_dest(dest: Path, create_folder=False):
         """Checks if the destination is legitimate and creates directory, if create is True"""
         if not dest.is_dir():
-            if create:
+            if create_folder:
                 dest.expanduser()
                 Path.mkdir(dest, parents=True, exist_ok=True)
                 print(f"{str(dest)} directory created")
             else:
                 raise Exception(f"Error: {str(dest)} does not exist")
         return dest
-
-    @staticmethod
-    def check_absolute(folder: Path):
-        """Checks if the given Path is absolute, if not it makes it absolute"""
-        if folder.is_absolute():
-            return folder
-        else:
-            return Path.cwd().joinpath(folder)
 
     @staticmethod
     def get_text(file):
@@ -199,6 +186,7 @@ class Line2Page:
                                (255, 255, 255))
         else:
             result = Image.new('LA', (img_width + self.border, img_height + self.border + spacer_height))
+
         before = self.border
 
         for img in img_list:
