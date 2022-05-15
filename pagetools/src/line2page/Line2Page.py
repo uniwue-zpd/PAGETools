@@ -1,6 +1,5 @@
 # Nachfragen
 import cv2
-import lxml
 
 # keep this
 import glob
@@ -9,12 +8,9 @@ import sys
 
 import numpy
 from PIL import Image
-from xml.etree.ElementTree import Element, SubElement
-from xml.etree import ElementTree
 from datetime import datetime
-from xml.dom import minidom
 
-import lxml
+from lxml import etree
 
 class Line2Page:
     """Object, which stores meta data
@@ -111,13 +107,6 @@ class Line2Page:
         sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
         sys.stdout.flush()
 
-    @staticmethod
-    def prettify(elem):
-        """Return a pretty-printed XML string for the Element."""
-        rough_string = ElementTree.tostring(elem, 'utf-8')
-        reparsed = minidom.parseString(rough_string)
-        return reparsed.toprettyxml("  ")
-
     def make_page(self, page_with_name, semaphore):
         """Creates img and corresponding xml of a page"""
         merged = self.merge_images(page_with_name[0])
@@ -125,8 +114,8 @@ class Line2Page:
         merged.close()
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width)
         if self.debug is True:
-            print(self.prettify(xml_tree))
-        xml = ElementTree.tostring(xml_tree, 'utf8', 'xml')
+            print(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
+        xml = etree.tostring(xml_tree, encoding='utf-8')
         xml_tree.clear()
         myfile = open(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + ".xml", "wb")
         myfile.write(xml)
@@ -200,29 +189,29 @@ class Line2Page:
         Builds PageXML from list of images, with txt files corresponding to each one of them
         :return: the built PageXml[.xml] file
         """
-        pcgts = Element('PcGts')
-        pcgts.set('xmlns', 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15')
-        pcgts.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        pcgts.set('xsi:schemaLocation', self.xmlSchemaLocation)
+        pcgts = etree.Element('PcGts')
+        pcgts.set('xmlns', self.xmlSchemaLocation)
+        #pcgts.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+        # pcgts.set('xsi:schemaLocation', self.xmlSchemaLocation)
 
-        metadata = SubElement(pcgts, 'Metadata')
-        creator = SubElement(metadata, 'Creator')
+        metadata = etree.SubElement(pcgts, 'Metadata')
+        creator = etree.SubElement(metadata, 'Creator')
         creator.text = self.creator
-        created = SubElement(metadata, 'Created')
+        created = etree.SubElement(metadata, 'Created')
         generated_on = datetime.now().isoformat()
         created.text = generated_on
-        last_change = SubElement(metadata, 'LastChange')
+        last_change = etree.SubElement(metadata, 'LastChange')
         last_change.text = generated_on
 
-        page = SubElement(pcgts, 'Page')
+        page = etree.SubElement(pcgts, 'Page')
         page.set('imageFilename', img_name)
         page.set('imageHeight', str(img_height))
         page.set('imageWidth', str(img_width))
 
-        text_region = SubElement(page, 'TextRegion')
+        text_region = etree.SubElement(page, 'TextRegion')
         text_region.set('id', 'r0')
         text_region.set('type', 'paragraph')
-        region_coords = SubElement(text_region, 'Coords')
+        region_coords = etree.SubElement(text_region, 'Coords')
         s = str(self.border)
         coord_string = s + ',' + s + ' ' + s + "," + str(img_height - self.border) \
                        + ' ' + str(img_width - self.border) + ',' + str(img_height - self.border) \
@@ -231,23 +220,23 @@ class Line2Page:
         i = 1
         last_bottom = self.border
         for line in line_list:
-            text_line = SubElement(text_region, 'TextLine')
+            text_line = etree.SubElement(text_region, 'TextLine')
             text_line.set('id', 'r0_l' + str(Path(line[0]).name.split('.')[0].zfill(3)))
             i += 1
-            line_coords = SubElement(text_line, 'Coords')
+            line_coords = etree.SubElement(text_line, 'Coords')
             image = Image.open(line[0])
             (width, height) = image.size
             image.close()
             line_coords.set('points', self.make_coord_string(last_bottom, width, height))
             last_bottom += (height + self.line_spacing)
-            line_gt_text = SubElement(text_line, 'TextEquiv')
+            line_gt_text = etree.SubElement(text_line, 'TextEquiv')
             line_gt_text.set('index', str(0))
-            unicode_gt = SubElement(line_gt_text, 'Unicode')
+            unicode_gt = etree.SubElement(line_gt_text, 'Unicode')
             unicode_gt.text = line[2]
             if self.pred:
-                line_prediction_text = SubElement(text_line, 'TextEquiv')
+                line_prediction_text = etree.SubElement(text_line, 'TextEquiv')
                 line_prediction_text.set('index', str(1))
-                unicode_prediction = SubElement(line_prediction_text, 'Unicode')
+                unicode_prediction = etree.SubElement(line_prediction_text, 'Unicode')
                 unicode_prediction.text = line[4]
 
         return pcgts
