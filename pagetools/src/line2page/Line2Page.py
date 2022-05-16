@@ -53,7 +53,7 @@ class Line2Page:
         self.xmlSchemaLocation = \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15 ' \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd'
-
+        self.xmlSchemaLocation = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd' # remove this line
         # remove
         # self.print_self()
 
@@ -189,10 +189,8 @@ class Line2Page:
         Builds PageXML from list of images, with txt files corresponding to each one of them
         :return: the built PageXml[.xml] file
         """
-        pcgts = etree.Element('PcGts')
-        pcgts.set('xmlns', self.xmlSchemaLocation)
-        #pcgts.set('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        # pcgts.set('xsi:schemaLocation', self.xmlSchemaLocation)
+        NSMAP = {None : 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 'schemaLocation' : self.xmlSchemaLocation}
+        pcgts = etree.Element('PcGts', nsmap=NSMAP)
 
         metadata = etree.SubElement(pcgts, 'Metadata')
         creator = etree.SubElement(metadata, 'Creator')
