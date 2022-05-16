@@ -53,7 +53,6 @@ class Line2Page:
         self.xmlSchemaLocation = \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15 ' \
             'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd'
-        self.xmlSchemaLocation = 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd' # remove this line
         # remove
         # self.print_self()
 
@@ -115,7 +114,7 @@ class Line2Page:
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width)
         if self.debug is True:
             print(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
-        xml = etree.tostring(xml_tree, encoding='utf-8')
+        xml = etree.tostring(xml_tree, encoding='utf-8', xml_declaration='xml')
         xml_tree.clear()
         myfile = open(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + ".xml", "wb")
         myfile.write(xml)
@@ -189,8 +188,10 @@ class Line2Page:
         Builds PageXML from list of images, with txt files corresponding to each one of them
         :return: the built PageXml[.xml] file
         """
-        NSMAP = {None : 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15', 'xsi': 'http://www.w3.org/2001/XMLSchema-instance', 'schemaLocation' : self.xmlSchemaLocation}
-        pcgts = etree.Element('PcGts', nsmap=NSMAP)
+        attribute_schema_location = etree.QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
+        NSMAP = {None : 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15',
+                 'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+        pcgts = etree.Element('PcGts', {attribute_schema_location : self.xmlSchemaLocation}, nsmap=NSMAP)
 
         metadata = etree.SubElement(pcgts, 'Metadata')
         creator = etree.SubElement(metadata, 'Creator')
