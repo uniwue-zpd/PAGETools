@@ -16,18 +16,19 @@ from multiprocessing import Semaphore
 @click.option('-e', '--ext', default='.bin.png', help='Image extension')
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
-@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True), help='Line spacing (in pixel)')
+@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True), help='Line spacing in pixel; (top, bottom, left, right)')
 @click.option('-b', '--border', default=10, type=click.IntRange(min=0,clamp=True), help='Border (in pixel)')
 @click.option('--debug', default=False, type=bool, help='Prints debug XML')
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
+@click.option('--xml-schema', default='19', type=click.Choice(['17', '19']), help='Sets the year of the xml-Schema to be used')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
-                  debug, threads):
+                  debug, threads, xml_schema):
     image_path = source_folder if not image_folder else image_folder
     gt_path = source_folder if not gt_folder else gt_folder
 
     tic = time.perf_counter()
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
-                        border, debug, threads)
+                        border, debug, threads, xml_schema)
     opt_obj.match_files()
     pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
     pages = opt_obj.name_pages(pages)

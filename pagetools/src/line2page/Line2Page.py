@@ -18,7 +18,7 @@ class Line2Page:
     """
 
     def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
-                 debug, threads):
+                 debug, threads, xml_schema):
         self.creator = creator
         self.source = self.check_dest(Path(source).resolve())
         if image_folder == source or image_folder:
@@ -50,9 +50,11 @@ class Line2Page:
         self.pred_suffix = ".pred.txt"
         self.img_suffix = '.nrm.png'
 
+        self.nsmap = f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15'
+        self.xsi = 'http://www.w3.org/2001/XMLSchema-instance'
         self.xmlSchemaLocation = \
-            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15 ' \
-            'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd'
+            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15 ' \
+            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15/pagecontent.xsd'
         # remove
         # self.print_self()
 
@@ -189,7 +191,7 @@ class Line2Page:
         :return: the built PageXml[.xml] file
         """
         attribute_schema_location = etree.QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
-        NSMAP = {None : 'http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15',
+        NSMAP = {None : self.nsmap,
                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
         pcgts = etree.Element('PcGts', {attribute_schema_location : self.xmlSchemaLocation}, nsmap=NSMAP)
 
