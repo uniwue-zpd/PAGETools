@@ -17,7 +17,7 @@ from multiprocessing import Semaphore
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
 @click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True), help='Line spacing in pixel; (top, bottom, left, right)')
-@click.option('-b', '--border', default=10, type=click.IntRange(min=0,clamp=True), help='Border (in pixel)')
+@click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True), help='Border (in pixel)')
 @click.option('--debug', default=False, type=bool, help='Prints debug XML')
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
 @click.option('--xml-schema', default='19', type=click.Choice(['17', '19']), help='Sets the year of the xml-Schema to be used')

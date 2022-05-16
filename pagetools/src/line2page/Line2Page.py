@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 import numpy
+import numpy as np
 from PIL import Image
 from datetime import datetime
 
@@ -35,7 +36,7 @@ class Line2Page:
         self.pred = pred
         self.lines = lines
         self.line_spacing = spacing
-        self.border = border
+        #self.border = border
         self.debug = debug
         self.threads = threads
 
@@ -49,6 +50,13 @@ class Line2Page:
         self.gt_suffix = ".gt.txt"
         self.pred_suffix = ".pred.txt"
         self.img_suffix = '.nrm.png'
+
+        self.background_colour = (0, 255, 0)
+        if border[1] > lines:
+            footer_size = border[1] - lines
+        else:
+            footer_size = 0
+        self.border = (border[0], footer_size, border[2], border[3])
 
         self.nsmap = f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15'
         self.xsi = 'http://www.w3.org/2001/XMLSchema-instance'
@@ -111,9 +119,11 @@ class Line2Page:
     def make_page(self, page_with_name, semaphore):
         """Creates img and corresponding xml of a page"""
         merged = self.merge_images(page_with_name[0])
-        merged.save(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix)
-        merged.close()
-        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width)
+        # merged.save(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix) # pillow
+        cv2.imwrite(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix, merged)
+        # merged.close() # pillow
+        # build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.height, merged.width) # pillow
+        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.shape[0], merged.shape[1])
         if self.debug is True:
             print(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
         xml = etree.tostring(xml_tree, encoding='utf-8', xml_declaration='xml')
@@ -162,27 +172,38 @@ class Line2Page:
         img_height = 0
         spacer_height = self.line_spacing * (len(page) - 1)
         for line in page:
-            # image_data = cv2.imread(line[0])
-            image_data = Image.open(line[0]) # pillow
+            image_data = cv2.imread(line[0])
+            # image_data = Image.open(line[0]) # pillow
             image = image_data.copy()
-            image_data.close()  # pillow
-            (width, height) = image.size # pillow
-            # (height, width) = image.shape
+            # image_data.close() # pillow
+            # (width, height) = image.size # pillow
+            (height, width, channels) = image.shape
             img_width = max(img_width, width)
             img_height += height
             img_list.append(image)
         if 'nrm' not in self.img_suffix:
-            result = Image.new('RGB', (img_width + self.border * 2, img_height + self.border * 2 + spacer_height),
-                               (255, 255, 255))
+            # result = Image.new('RGB', (img_width + self.border * 2, img_height + self.border * 2 + spacer_height), (255, 255, 255)) #pillow
+            result = np.full((self.border[0], img_width + self.border[2] + self.border[3], channels), self.background_colour, np.uint8)
         else:
-            result = Image.new('LA', (img_width + self.border, img_height + self.border + spacer_height))
+            # result = Image.new('LA', (img_width + self.border, img_height + self.border + spacer_height)) # pillow
+            result = np.zeros((self.border[0], img_width + self.border[2] + self.border[3], channels), np.uint8)
+        # cv2.imwrite("Test_Zeroes.jpg", result) # remove
 
-        before = self.border
-
+        # before = self.border
+        # print(f'Result-width {result.shape[1]}')
         for img in img_list:
-            result.paste(img, (self.border, before))
-            before += img.size[1] + self.line_spacing
-            img.close()
+            # result.paste(img, (self.border, before)) # pillow
+            #if img.shape[1] < img_width:
+                # print(f'Img shape before {img.shape[1]}, should be {result.shape[1]}')
+            padding = img_width - img.shape[1]
+            img = cv2.copyMakeBorder(img, 0, self.line_spacing, self.border[2], padding + self.border[3], cv2.BORDER_CONSTANT, None, self.background_colour)
+            # print(f'Img shape after {img.shape[1]}')
+            result = np.concatenate((result, img), axis=0)
+            # before += img.size[1] + self.line_spacing # pillow
+            # before += img.shape[0] + self.line_spacing
+        footer = np.full((self.border[1], img_width + self.border[2] + self.border[3], channels), self.background_colour, np.uint8)
+        result = np.concatenate((result, footer), axis=0)
+            # img.close() # pillow
         return result
 
     def build_xml(self, line_list, img_name, img_height, img_width):
@@ -213,21 +234,26 @@ class Line2Page:
         text_region.set('id', 'r0')
         text_region.set('type', 'paragraph')
         region_coords = etree.SubElement(text_region, 'Coords')
-        s = str(self.border)
-        coord_string = s + ',' + s + ' ' + s + "," + str(img_height - self.border) \
-                       + ' ' + str(img_width - self.border) + ',' + str(img_height - self.border) \
-                       + ' ' + str(img_width - self.border) + ',' + s
+        min_x = self.border[2]
+        max_x = img_width - self.border[3]
+        min_y = self.border[0]
+        max_y = img_height - self.border[1]
+        coord_string = f'{min_x},{min_y} {max_x},{min_y} {max_x},{max_y} ({min_x},{max_y}'
         region_coords.set('points', coord_string)
         i = 1
-        last_bottom = self.border
+        # last_bottom = self.border # pillow
+        last_bottom = min_y
         for line in line_list:
             text_line = etree.SubElement(text_region, 'TextLine')
             text_line.set('id', 'r0_l' + str(Path(line[0]).name.split('.')[0].zfill(3)))
             i += 1
             line_coords = etree.SubElement(text_line, 'Coords')
-            image = Image.open(line[0])
-            (width, height) = image.size
-            image.close()
+            # image = Image.open(line[0]) # pillow
+            image = cv2.imread(line[0])
+            # (width, height) = image.size # pillow
+            height = image.shape[0]
+            width = image.shape[1]
+            # image.close() # pillow
             line_coords.set('points', self.make_coord_string(last_bottom, width, height))
             last_bottom += (height + self.line_spacing)
             line_gt_text = etree.SubElement(text_line, 'TextEquiv')
@@ -242,13 +268,19 @@ class Line2Page:
 
         return pcgts
 
+
     def make_coord_string(self, previous_lower_left, line_width, line_height):
         """Builds value string, to be incorporated into the xml"""
-        b = str(self.border)
+        b = str(self.border[0])
         p = str(previous_lower_left)
-        w = str(line_width + self.border)
+        w = str(line_width + self.border[1] + self.border[2])
         h = str(line_height + previous_lower_left)
-        coord_string = b + ',' + p + ' ' + b + "," + h + ' ' + w + ',' + h + ' ' + w + ',' + p
+        x_min = self.border[0]
+        x_max = x_min + line_width
+        y_min = previous_lower_left
+        y_max = y_min + line_height
+        # coord_string = b + ',' + p + ' ' + b + "," + h + ' ' + w + ',' + h + ' ' + w + ',' + p
+        coord_string = f'{x_min},{y_min}) {x_max},{y_min} {x_max},{y_max} {x_min},{y_max}'
         return coord_string
 
     # remove
