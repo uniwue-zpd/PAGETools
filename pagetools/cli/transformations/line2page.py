@@ -1,5 +1,6 @@
 from pagetools.src.line2page.Line2Page import Line2Page
 
+import logging
 from pathlib import Path
 import click
 import time
@@ -16,17 +17,24 @@ from multiprocessing import Semaphore
 @click.option('-e', '--ext', default='.bin.png', help='Image extension')
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
-@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True), help='Line spacing in pixel; (top, bottom, left, right)')
-@click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True), help='Border (in pixel)')
+@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True),
+              help='Line spacing in pixel; (top, bottom, left, right)')
+@click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True),
+              help='Border (in pixel)')
 @click.option('--debug', default=False, type=bool, help='Prints debug XML')
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
-@click.option('--xml-schema', default='19', type=click.Choice(['17', '19']), help='Sets the year of the xml-Schema to be used')
+@click.option('--xml-schema', default='19', type=click.Choice(['17', '19']),
+              help='Sets the year of the xml-Schema to be used')
+@click.option('--log-level', default='30', type=click.Choice(['10', '20', '30', '40', '50']),
+              help='DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
-                  debug, threads, xml_schema):
+                  debug, threads, xml_schema, log_level):
     image_path = source_folder if not image_folder else image_folder
     gt_path = source_folder if not gt_folder else gt_folder
 
     tic = time.perf_counter()
+    logging.basicConfig(level=int(log_level))
+    log = logging.getLogger(__name__)
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                         border, debug, threads, xml_schema)
     opt_obj.match_files()
@@ -36,7 +44,8 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     i = 0
     processes = []
     concurrency = opt_obj.threads
-    click.echo(f"Currently using {str(concurrency)} Thread(s)")
+    log.info(f"Currently using {str(concurrency)} Thread(s)")
+    #click.echo(f"Currently using {str(concurrency)} Thread(s)")
     sema = Semaphore(concurrency)
     for page in pages:
         sema.acquire()
