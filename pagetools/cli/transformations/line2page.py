@@ -25,16 +25,12 @@ from multiprocessing import Semaphore
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
 @click.option('--xml-schema', default='19', type=click.Choice(['17', '19']),
               help='Sets the year of the xml-Schema to be used')
-@click.option('--log-level', default='30', type=click.Choice(['10', '20', '30', '40', '50']),
-              help='DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
-                  debug, threads, xml_schema, log_level):
+                  debug, threads, xml_schema):
     image_path = source_folder if not image_folder else image_folder
     gt_path = source_folder if not gt_folder else gt_folder
 
     tic = time.perf_counter()
-    logging.basicConfig(level=int(log_level))
-    log = logging.getLogger(__name__)
     opt_obj = Line2Page(creator, source_folder, image_path, gt_path, dest_folder, ext, pred, lines, line_spacing,
                         border, debug, threads, xml_schema)
     opt_obj.match_files()
@@ -44,12 +40,12 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     i = 0
     processes = []
     concurrency = opt_obj.threads
-    log.info(f"Currently using {str(concurrency)} Thread(s)")
-    #click.echo(f"Currently using {str(concurrency)} Thread(s)")
+    click.echo(f"Currently using {str(concurrency)} Thread(s)")
     sema = Semaphore(concurrency)
     for page in pages:
         sema.acquire()
-        opt_obj.progress(i + 1, len(pages) * 2, f"Processing page {str(i + 1)} of {str(len(pages))}")
+        # opt_obj.progress(i + 1, len(pages) * 2, f"Processing page {str(i + 1)} of {str(len(pages))}")
+        click.progressbar(length=len(pages) * 2)
         process = multiprocessing.Process(target=opt_obj.make_page, args=(page, sema,))
         processes.append(process)
         process.start()

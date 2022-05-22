@@ -1,7 +1,5 @@
-
-
-# keep this
 import glob
+import logging
 from pathlib import Path
 import sys
 import cv2
@@ -14,7 +12,6 @@ class Line2Page:
     """Object, which stores meta data
     source, image_folder, gt_folder, dest_folder are Path objects
     """
-
     def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
                  debug, threads, xml_schema):
         self.creator = creator
@@ -60,8 +57,6 @@ class Line2Page:
         self.xmlSchemaLocation = \
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15 ' \
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15/pagecontent.xsd'
-        # remove
-        # self.print_self()
 
     @staticmethod
     def check_dest(dest: Path, create_folder=False):
@@ -118,8 +113,10 @@ class Line2Page:
         merged = self.merge_images(page_with_name[0])
         cv2.imwrite(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix, merged)
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.shape[0], merged.shape[1])
+
         if self.debug is True:
             print(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
+
         xml = etree.tostring(xml_tree, encoding='utf-8', xml_declaration='xml')
         xml_tree.clear()
         myfile = open(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + ".xml", "wb")
@@ -147,7 +144,7 @@ class Line2Page:
                         pairing.append(pred_filename)
                         pairing.append(self.get_text(pred_filename))
                     else:
-                        print(
+                         print(
                             f"WARNING: The File {self.gt_folder.joinpath(img_name)}{self.pred_suffix} could not be "
                             f"found! Omitting line from page")
                 self.matches.append(pairing.copy())
