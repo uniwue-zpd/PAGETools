@@ -14,6 +14,9 @@ class Line2Page:
     """
     def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
                  debug, threads, xml_schema):
+        logging.basicConfig(level=int(debug))
+        self.log = logging.getLogger(__name__)
+
         self.creator = creator
         self.source = self.check_dest(Path(source).resolve())
         if image_folder == source or image_folder:
@@ -30,7 +33,6 @@ class Line2Page:
         self.pred = pred
         self.lines = lines
         self.line_spacing = spacing
-        self.debug = debug
         self.threads = threads
 
         # List of all images in the folder with the desired extension
@@ -58,17 +60,13 @@ class Line2Page:
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15 ' \
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15/pagecontent.xsd'
 
-    @staticmethod
-    def check_dest(dest: Path, create_folder=False):
-        """Checks if the destination is legitimate and creates directory, if create is True"""
-        if not dest.is_dir():
-            if create_folder:
-                dest.expanduser()
-                Path.mkdir(dest, parents=True, exist_ok=True)
-                print(f"{str(dest)} directory created")
-            else:
-                raise Exception(f"Error: {str(dest)} does not exist")
-        return dest
+        self.log.debug(f"Set Attributes: \nCreator: {self.creator}\nSource Folder: {self.source}\n"
+                       f"Image Folder: {self.image_folder}\nGT Folder: {self.gt_folder}\n"
+                       f"Destination Folder: {self.dest_folder}\nImage Extension: {self.ext}\n"
+                       f"Predecessor: {self.pred}\nNumber of lines per image: {self.lines}\n"
+                       f"Line Spacing: {self.line_spacing}\nBorder: (head:{self.border[0]}, footer: {self.border[1]}, "
+                       f"left: {self.border[2]}, right:{self.border[3]})\nThreads: {self.threads}\n"
+                       f"XML Schema: {self.xmlSchemaLocation}")
 
     @staticmethod
     def get_text(file):
@@ -98,15 +96,17 @@ class Line2Page:
             page_with_name.clear()
         return pages_with_name
 
-    @staticmethod
-    def progress(count, total, status='.'):
-        """displays a progress bar"""
-        bar_len = 60
-        filled_len = int(round(bar_len * count / float(total)))
-        percents = round(100.0 * count / float(total), 1)
-        bar = '█' * filled_len + '_' * (bar_len - filled_len)
-        sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
-        sys.stdout.flush()
+    def check_dest(self, dest: Path, create_folder=False):
+        """Checks if the destination is legitimate and creates directory, if create is True"""
+        if not dest.is_dir():
+            if create_folder:
+                dest.expanduser()
+                Path.mkdir(dest, parents=True, exist_ok=True)
+                self.log.info(f" {str(dest)} directory created")
+            else:
+                # self.log.exception(f" {str(dest)} does not exist")
+                raise Exception(f"Error: {str(dest)} does not exist")
+        return dest
 
     def make_page(self, page_with_name, semaphore):
         """Creates img and corresponding xml of a page"""
@@ -114,9 +114,7 @@ class Line2Page:
         cv2.imwrite(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix, merged)
         xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.shape[0], merged.shape[1])
 
-        if self.debug is True:
-            print(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
-
+        self.log.debug(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
         xml = etree.tostring(xml_tree, encoding='utf-8', xml_declaration='xml')
         xml_tree.clear()
         myfile = open(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + ".xml", "wb")
@@ -144,14 +142,12 @@ class Line2Page:
                         pairing.append(pred_filename)
                         pairing.append(self.get_text(pred_filename))
                     else:
-                         print(
-                            f"WARNING: The File {self.gt_folder.joinpath(img_name)}{self.pred_suffix} could not be "
-                            f"found! Omitting line from page")
+                        self.log.warning(f" The File {self.gt_folder.joinpath(img_name)}{self.pred_suffix} could not be"
+                                         f" found! Omitting line from page")
                 self.matches.append(pairing.copy())
             else:
-                print(
-                    f"WARNING: The File {str(self.gt_folder)} {img_name}{self.gt_suffix} could not be found! Omitting line "
-                    f"from page")
+                self.log.warning(f" The File {str(self.gt_folder.joinpath(img_name))}{self.gt_suffix} could not be found! "
+                                 f"Omitting line from page")
 
     def merge_images(self, page):
         """
@@ -250,25 +246,3 @@ class Line2Page:
         y_max = y_min + line_height
         coord_string = f'{x_min},{y_min} {x_max},{y_min} {x_max},{y_max} {x_min},{y_max}'
         return coord_string
-
-    # remove
-    def print_self(self):
-        """Prints all info saved in the object"""
-
-        print("Object_info:")
-        print(f"Creator - {str(self.creator)}")
-        print(f"Source_Folder - {str(self.source)}")
-        print(f"Image_Folder - {str(self.image_folder)}")
-        print(f"GT_Folder - {str(self.gt_folder)}")
-        print(f"Dest_Folder - {str(self.dest_folder)}")
-        print(f"Ext - {str(self.ext)}")
-        print(f"pred - {str(self.pred)}")
-        print(f"Lines - {str(self.lines)}")
-        print(f"Spacing - {str(self.line_spacing)}")
-        print(f"Border - {str(self.border)}")
-        print(f"Debug - {str(self.debug)}")
-        print(f"Threads - {str(self.threads)}")
-
-        print(f"GT_Suffix - {str(self.gt_suffix)}")
-        print(f"Pred_Suffix - {str(self.pred_suffix)}")
-        print(f"Img_Suffix - {str(self.img_suffix)}\n")
