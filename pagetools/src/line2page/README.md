@@ -4,33 +4,32 @@ Merges line images with corresponding textfiles to page images and pagexml
 # Usage
 
 ```
-# python3 line2page.py -h
+# pagetools line2page --help
 
-usage: line2page.py [-h] [-s SOURCE_PATH] [-i IMAGE_PATH] [-gt GT_PATH] [-d DEST_PATH] [-e IMG_EXT] [-p] [-l LINES]
-                    [-ls SPACING] [-b BORDER] [--debug]
+Usage: pagetools line2page [OPTIONS]
 
-python script to merge GT lines to page images and xml
+  Merges line images and text to a combined image with a corresponding XML-
+  File
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -s SOURCE_PATH, --source-folder SOURCE_PATH
-                        Path to images and GT
-  -i IMAGE_PATH, --images-folder IMAGE_PATH
-                        Path to images
-  -gt GT_PATH, --gt-folder GT_PATH
-                        Path to GT
-  -d DEST_PATH, --dest-folder DEST_PATH
-                        Path to merge objects
-  -e IMG_EXT, --ext IMG_EXT
-                        image extension
-  -p, --pred            Set Flag to also store .pred.txt
-  -l LINES, --lines LINES
-                        lines per page
-  -ls SPACING, --line-spacing SPACING
-                        line spacing
-  -b BORDER, --border BORDER
-                        border in px
-  --debug               prints debug xml
+Options:
+  -c, --creator TEXT              Creator tag for PAGE XML
+  -s, --source-folder TEXT        Path to images and GT  [required]
+  -i, --image-folder TEXT         Path to images
+  -gt, --gt-folder TEXT           Path to GT
+  -d, --dest-folder TEXT          Path to merge objects
+  -e, --ext TEXT                  Image extension
+  -p, --pred BOOLEAN              Set flag to also store .pred.txt
+  -l, --lines INTEGER RANGE       Lines per page
+  -ls, --line-spacing INTEGER RANGE
+                                  Spacing between lines in pixel
+  -b, --border INTEGER RANGE...   Border in pixel: top bottom left right
+  --debug [10|20|30|40|50]        Sets the level of feedback to receive:
+                                  DEBUG=10, INFO=20, WARNING=30, ERROR=40,
+                                  CRITICAL=50
+  --threads INTEGER RANGE         Thread count to be used
+  --xml-schema [17|19]            Sets the year of the xml-Schema to be used
+  --help                          Show this message and exit.
+
 ```
 
 #### File Names
