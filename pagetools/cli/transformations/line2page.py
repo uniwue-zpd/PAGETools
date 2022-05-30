@@ -8,7 +8,7 @@ import multiprocessing
 from multiprocessing import Semaphore
 
 
-@click.command("line2page", help="Merges line images and text to combined image with PAGE XML annotation")
+@click.command("line2page", help="Merges line images and text to a combined image with a corresponding XML-File")
 @click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML')
 @click.option('-s', '--source-folder', required=True, help='Path to images and GT')
 @click.option('-i', '--image-folder', default='', help='Path to images')
@@ -18,9 +18,9 @@ from multiprocessing import Semaphore
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
 @click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True),
-              help='Line spacing in pixel')
+              help='Spacing between lines in pixel')
 @click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True),
-              help='Border in pixel: (top, bottom, left, right)')
+              help='Border in pixel: top bottom left right')
 @click.option('--debug', default='20', type=click.Choice(['10', '20', '30', '40', '50']),
               help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
