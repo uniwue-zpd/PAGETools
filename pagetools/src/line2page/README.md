@@ -1,5 +1,5 @@
 # line2page
-Merges line images with corresponding textfiles to page images and pagexml
+Merges line images with corresponding text-files in page-images and page-xml
 
 # Usage
 
@@ -8,8 +8,8 @@ Merges line images with corresponding textfiles to page images and pagexml
 
 Usage: pagetools line2page [OPTIONS]
 
-  Merges line images and text to a combined image with a corresponding XML-
-  File
+  Links line images and corresponding texts in a page and creates a combined
+  image and XML-File of each page
 
 Options:
   -c, --creator TEXT              Creator tag for PAGE XML
