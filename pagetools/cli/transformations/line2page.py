@@ -8,7 +8,8 @@ import multiprocessing
 from multiprocessing import Semaphore
 
 
-@click.command("line2page", help="Merges line images and text to a combined image with a corresponding XML-File")
+@click.command("line2page", help="Links line images and corresponding texts in a page and creates a combined image and "
+                                 "XML-File of each page")
 @click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML')
 @click.option('-s', '--source-folder', required=True, help='Path to images and GT')
 @click.option('-i', '--image-folder', default='', help='Path to images')
