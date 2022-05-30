@@ -1,7 +1,6 @@
 import glob
 import logging
 from pathlib import Path
-import sys
 import cv2
 import numpy as np
 from datetime import datetime
@@ -47,7 +46,7 @@ class Line2Page:
         self.img_suffix = '.nrm.png'
 
         self.background_colour = (0, 0, 0)
-        self.channels = 3                   # number of colour_channels
+        self.colour_channels = 3
         if border[1] > lines:
             footer_size = border[1] - lines
         else:
@@ -60,7 +59,7 @@ class Line2Page:
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15 ' \
             f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15/pagecontent.xsd'
 
-        self.log.debug(f"Set Attributes: \nCreator: {self.creator}\nSource Folder: {self.source}\n"
+        self.log.debug(f"Attributes: \nCreator: {self.creator}\nSource Folder: {self.source}\n"
                        f"Image Folder: {self.image_folder}\nGT Folder: {self.gt_folder}\n"
                        f"Destination Folder: {self.dest_folder}\nImage Extension: {self.ext}\n"
                        f"Predecessor: {self.pred}\nNumber of lines per image: {self.lines}\n"
@@ -104,8 +103,9 @@ class Line2Page:
                 Path.mkdir(dest, parents=True, exist_ok=True)
                 self.log.info(f" {str(dest)} directory created")
             else:
-                # self.log.exception(f" {str(dest)} does not exist")
-                raise Exception(f"Error: {str(dest)} does not exist")
+                error_msg = f" {str(dest)} does not exist"
+                self.log.error(error_msg)
+                raise NameError(error_msg)
         return dest
 
     def make_page(self, page_with_name, semaphore):
@@ -156,32 +156,29 @@ class Line2Page:
         """
         img_list = []
         img_width = 0
-        #find max-width of all images
+        # find max-width of all images
         for line in page:
             image_data = cv2.imread(line[0])
             image = image_data.copy()
             width = image.shape[1]
             img_width = max(img_width, width)
             img_list.append(image)
-        if 'nrm' not in self.img_suffix:
-            result = np.full((self.border[0], img_width + self.border[2] + self.border[3], self.channels),
+            result = np.full((self.border[0], img_width + self.border[2] + self.border[3], self.colour_channels),
                              self.background_colour, np.uint8)
-        else:
-            result = np.zeros((self.border[0], img_width + self.border[2] + self.border[3], self.channels), np.uint8)
         # All images need the same width for np.concatenate to work -> padding on the image at its right side
         for img in img_list:
             padding = img_width - img.shape[1]
             img = cv2.copyMakeBorder(img, 0, self.line_spacing, self.border[2], padding + self.border[3],
                                      cv2.BORDER_CONSTANT, None, self.background_colour)
             result = np.concatenate((result, img), axis=0)
-        footer = np.full((self.border[1], img_width + self.border[2] + self.border[3], self.channels),
-                         self.background_colour, np.uint8)
+            footer = np.full((self.border[1], img_width + self.border[2] + self.border[3], self.colour_channels),
+                             self.background_colour, np.uint8)
         result = np.concatenate((result, footer), axis=0)
         return result
 
     def build_xml(self, line_list, img_name, img_height, img_width):
         """
-        Builds PageXML from list of images, with txt files corresponding to each one of them
+        Builds PageXML from list of images, with corresponding text
         :return: the built PageXml[.xml] file
         """
         attribute_schema_location = etree.QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
@@ -213,12 +210,10 @@ class Line2Page:
         max_y = img_height - self.border[1]
         coord_string = f'{min_x},{min_y} {max_x},{min_y} {max_x},{max_y} {min_x},{max_y}'
         region_coords.set('points', coord_string)
-        i = 1
         last_bottom = min_y
         for line in line_list:
             text_line = etree.SubElement(text_region, 'TextLine')
             text_line.set('id', 'r0_l' + str(Path(line[0]).name.split('.')[0].zfill(3)))
-            i += 1
             line_coords = etree.SubElement(text_line, 'Coords')
             image = cv2.imread(line[0])
             height = image.shape[0]

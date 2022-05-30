@@ -18,9 +18,9 @@ from multiprocessing import Semaphore
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
 @click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True),
-              help='Line spacing in pixel; (top, bottom, left, right)')
+              help='Line spacing in pixel')
 @click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True),
-              help='Border (in pixel)')
+              help='Border in pixel: (top, bottom, left, right)')
 @click.option('--debug', default='20', type=click.Choice(['10', '20', '30', '40', '50']),
               help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
 @click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
@@ -44,7 +44,6 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     processes = []
     concurrency = opt_obj.threads
     log.info(f" Currently using {str(concurrency)} Thread(s)")
-    # click.echo(f"Currently using {str(concurrency)} Thread(s)")
     sema = Semaphore(concurrency)
     with click.progressbar(pages, label=f"Processing {len(pages)} Pages") as bar_processing:
         for page in bar_processing:
@@ -58,9 +57,7 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
             process.join()
     toc = time.perf_counter()
     log.info(f" Finished merging in {toc - tic:0.4f} seconds")
-    # click.echo(f"\nFinished merging in {toc - tic:0.4f} seconds")
     log.info(f" Pages have been stored at {str(opt_obj.dest_folder)}")
-    # click.echo(f"\nPages have been stored at {str(opt_obj.dest_folder)}")
 
 
 if __name__ == '__main__':
