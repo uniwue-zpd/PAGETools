@@ -70,10 +70,9 @@ class Line2Page:
 
     @staticmethod
     def get_text(file):
-        """extracts the text from inside the file"""
-        with open(file, 'r') as read_file:
-            data = read_file.read().rstrip()
-            return data
+        """Extracts the text from inside the file"""
+        with Path(file).open('r') as read_file:
+            return read_file.read().rstrip()
 
     @staticmethod
     def chunks(lst, n):
