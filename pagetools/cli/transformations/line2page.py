@@ -11,23 +11,27 @@ import click
 
 @click.command("line2page", help="Links line images and corresponding texts in a page and creates a combined image and "
                                  "XML-File of each page")
-@click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML')
+@click.option('-c', '--creator', default='user', help='Creator tag for PAGE XML', show_default=True)
 @click.option('-s', '--source-folder', required=True, help='Path to images and GT')
-@click.option('-i', '--image-folder', default='', help='Path to images')
-@click.option('-gt', '--gt-folder', default='', help='Path to GT')
-@click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects')
-@click.option('-e', '--ext', default='.bin.png', help='Image extension')
-@click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
-@click.option('-l', '--lines', default=20, type=click.IntRange(min=0, clamp=True), help='Lines per page')
+@click.option('-i', '--image-folder', default='', help='Path to images', show_default=True)
+@click.option('-gt', '--gt-folder', default='', help='Path to GT', show_default=True)
+@click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects',
+              show_default=True)
+@click.option('-e', '--ext', default='.bin.png', help='Image extension', show_default=True)
+@click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt', show_default=True)
+@click.option('-l', '--lines', default=20, type=click.IntRange(min=0, clamp=True), help='Lines per page',
+              show_default=True)
 @click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0, clamp=True),
-              help='Spacing between lines in pixel')
+              help='Spacing between lines in pixel', show_default=True)
 @click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0, clamp=True),
-              help='Border in pixel: top bottom left right')
+              help='Border in pixel: top bottom left right', show_default=True)
 @click.option('--debug', default='20', type=click.Choice(['10', '20', '30', '40', '50']),
-              help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
-@click.option('--threads', default=16, type=click.IntRange(min=1, clamp=True), help='Thread count to be used')
+              help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50',
+              show_default=True)
+@click.option('--threads', default=16, type=click.IntRange(min=1, clamp=True), help='Thread count to be used',
+              show_default=True)
 @click.option('--xml-schema', default='19', type=click.Choice(['17', '19']),
-              help='Sets the year of the xml-Schema to be used')
+              help='Sets the year of the xml-Schema to be used', show_default=True)
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
                   debug, threads, xml_schema):
     image_path = source_folder if not image_folder else image_folder
