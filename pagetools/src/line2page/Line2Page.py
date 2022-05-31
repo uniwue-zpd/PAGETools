@@ -67,11 +67,11 @@ class Line2Page:
             footer_size = 0
         self.border = (border[0], footer_size, border[2], border[3])
 
-        self.nsmap = f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15'
+        self.nsmap = f'http://schema.primaresearch.org/PAGE/gts/pagecontent/{xml_schema}-07-15'
         self.xsi = 'http://www.w3.org/2001/XMLSchema-instance'
         self.xmlSchemaLocation = \
-            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15 ' \
-            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/20{xml_schema}-07-15/pagecontent.xsd'
+            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/{xml_schema}-07-15 ' \
+            f'http://schema.primaresearch.org/PAGE/gts/pagecontent/{xml_schema}-07-15/pagecontent.xsd'
 
         self.log.debug(f"Attributes: \nCreator: {self.creator}\nSource Folder: {self.source}\n"
                        f"Image Folder: {self.image_folder}\nGT Folder: {self.gt_folder}\n"

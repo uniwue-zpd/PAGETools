@@ -30,7 +30,7 @@ import click
               show_default=True)
 @click.option('--threads', default=16, type=click.IntRange(min=1, clamp=True), help='Thread count to be used',
               show_default=True)
-@click.option('--xml-schema', default='19', type=click.Choice(['17', '19']),
+@click.option('--xml-schema', default='2019', type=click.Choice(['2017', '2019']),
               help='Sets the year of the xml-Schema to be used', show_default=True)
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,
                   debug, threads, xml_schema):
