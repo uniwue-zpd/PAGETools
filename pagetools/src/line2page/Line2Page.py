@@ -12,6 +12,7 @@ class Line2Page:
     """Object, which stores meta data
     source, image_folder, gt_folder, dest_folder are Path objects
     """
+
     def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
                  debug, threads, xml_schema):
         logging.basicConfig(level=int(debug))
@@ -82,7 +83,7 @@ class Line2Page:
 
     @staticmethod
     def name_pages(pages):
-        """ returns a list of all objects in pages with pagename followed by a 4-digit pagenumber """
+        """Returns a list of all objects in pages with pagename followed by a 4-digit pagenumber"""
         page_with_name = []
         pages_with_name = []
         page_iterator = 0
@@ -112,7 +113,8 @@ class Line2Page:
         """Creates img and corresponding xml of a page"""
         merged = self.merge_images(page_with_name[0])
         cv2.imwrite(str(self.dest_folder.joinpath(Path(page_with_name[1]).name)) + self.img_suffix, merged)
-        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.shape[0], merged.shape[1])
+        xml_tree = self.build_xml(page_with_name[0], page_with_name[1] + self.img_suffix, merged.shape[0],
+                                  merged.shape[1])
 
         self.log.debug(etree.tostring(xml_tree, encoding='unicode', pretty_print=True))
         xml = etree.tostring(xml_tree, encoding='utf-8', xml_declaration='xml')
@@ -146,8 +148,9 @@ class Line2Page:
                                          f" found! Omitting line from page")
                 self.matches.append(pairing.copy())
             else:
-                self.log.warning(f" The File {str(self.gt_folder.joinpath(img_name))}{self.gt_suffix} could not be found! "
-                                 f"Omitting line from page")
+                self.log.warning(
+                    f" The File {str(self.gt_folder.joinpath(img_name))}{self.gt_suffix} could not be found! "
+                    f"Omitting line from page")
 
     def merge_images(self, page):
         """
@@ -182,9 +185,9 @@ class Line2Page:
         :return: the built PageXml[.xml] file
         """
         attribute_schema_location = etree.QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation")
-        NSMAP = {None : self.nsmap,
+        NSMAP = {None: self.nsmap,
                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-        pcgts = etree.Element('PcGts', {attribute_schema_location : self.xmlSchemaLocation}, nsmap=NSMAP)
+        pcgts = etree.Element('PcGts', {attribute_schema_location: self.xmlSchemaLocation}, nsmap=NSMAP)
 
         metadata = etree.SubElement(pcgts, 'Metadata')
         creator = etree.SubElement(metadata, 'Creator')
