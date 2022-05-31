@@ -36,7 +36,7 @@ class Line2Page:
         self.threads = threads
 
         # List of all images in the folder with the desired extension
-        self.imgList = [f for f in sorted(glob.glob(str(self.image_folder) + '/*' + self.ext))]
+        self.imgList = [f for f in sorted(glob.glob(f"{str(self.image_folder)}/*{self.ext}"))]
         self.gtList = []
         self.nameList = []
         self.matches = []
