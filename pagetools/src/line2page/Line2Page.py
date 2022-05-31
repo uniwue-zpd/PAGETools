@@ -1,11 +1,12 @@
 import glob
 import logging
 from pathlib import Path
-import cv2
-import numpy as np
 from datetime import datetime
 
 from lxml import etree
+import cv2
+import numpy as np
+
 
 class Line2Page:
     """Object, which stores meta data
@@ -231,7 +232,6 @@ class Line2Page:
                 unicode_prediction.text = line[4]
 
         return pcgts
-
 
     def make_coord_string(self, previous_lower_left, line_width, line_height):
         """Builds value string, to be incorporated into the xml"""

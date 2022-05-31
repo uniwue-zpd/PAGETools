@@ -2,10 +2,11 @@ from pagetools.src.line2page.Line2Page import Line2Page
 
 import logging
 from pathlib import Path
-import click
 import time
 import multiprocessing
 from multiprocessing import Semaphore
+
+import click
 
 
 @click.command("line2page", help="Links line images and corresponding texts in a page and creates a combined image and "
