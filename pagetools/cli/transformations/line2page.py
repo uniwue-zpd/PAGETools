@@ -18,14 +18,14 @@ import click
 @click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), help='Path to merge objects')
 @click.option('-e', '--ext', default='.bin.png', help='Image extension')
 @click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt')
-@click.option('-l', '--lines', default=20, type=click.IntRange(min=0,clamp=True), help='Lines per page')
-@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0,clamp=True),
+@click.option('-l', '--lines', default=20, type=click.IntRange(min=0, clamp=True), help='Lines per page')
+@click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0, clamp=True),
               help='Spacing between lines in pixel')
-@click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0,clamp=True),
+@click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0, clamp=True),
               help='Border in pixel: top bottom left right')
 @click.option('--debug', default='20', type=click.Choice(['10', '20', '30', '40', '50']),
               help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50')
-@click.option('--threads', default=16, type=click.IntRange(min=1,clamp=True), help='Thread count to be used')
+@click.option('--threads', default=16, type=click.IntRange(min=1, clamp=True), help='Thread count to be used')
 @click.option('--xml-schema', default='19', type=click.Choice(['17', '19']),
               help='Sets the year of the xml-Schema to be used')
 def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, ext, pred, lines, line_spacing, border,

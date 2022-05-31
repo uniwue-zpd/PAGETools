@@ -13,8 +13,20 @@ class Line2Page:
     source, image_folder, gt_folder, dest_folder are Path objects
     """
 
-    def __init__(self, creator, source, image_folder, gt_folder, destination_folder, ext, pred, lines, spacing, border,
-                 debug, threads, xml_schema):
+    def __init__(self,
+                 creator,
+                 source,
+                 image_folder,
+                 gt_folder,
+                 destination_folder,
+                 ext,
+                 pred,
+                 lines,
+                 spacing,
+                 border,
+                 debug,
+                 threads,
+                 xml_schema):
         logging.basicConfig(level=int(debug))
         self.log = logging.getLogger(__name__)
 
@@ -241,5 +253,4 @@ class Line2Page:
         x_max = x_min + line_width
         y_min = previous_lower_left
         y_max = y_min + line_height
-        coord_string = f'{x_min},{y_min} {x_max},{y_min} {x_max},{y_max} {x_min},{y_max}'
-        return coord_string
+        return f'{x_min},{y_min} {x_max},{y_min} {x_max},{y_max} {x_min},{y_max}'
