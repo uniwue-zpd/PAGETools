@@ -42,7 +42,6 @@ def line2page_cli(creator, source_folder, image_folder, gt_folder, dest_folder, 
     pages = list(opt_obj.chunks(opt_obj.matches, opt_obj.lines))
     pages = opt_obj.name_pages(pages)
 
-    i = 0
     processes = []
     concurrency = opt_obj.threads
     log.info(f" Currently using {str(concurrency)} Thread(s)")
