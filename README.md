@@ -82,6 +82,42 @@ pagetools extract <Path/to/xml/files>/*.xml -ie <img_extension> -o <Path/to/outp
 
 Pay in mind that --include / --exclude currently work different from e.g. the same arguments in `rsync` (due to limitations with the `click` library). Inclusion of certain element types always trumps exclusion of the same type, regardless of the order in the call.
 
+#### line2page
+Merges line images with corresponding text-files in page-images and page-xml
+
+```
+Usage: pagetools line2page [OPTIONS]
+
+  Links line images and corresponding texts in a page and creates a combined
+  image and XML-File of each page
+
+Options:
+  -c, --creator TEXT              Creator tag for PAGE XML
+  -s, --source-folder TEXT        Path to images and GT  [required]
+  -i, --image-folder TEXT         Path to images
+  -gt, --gt-folder TEXT           Path to GT
+  -d, --dest-folder TEXT          Path to merge objects
+  -e, --ext TEXT                  Image extension
+  -p, --pred BOOLEAN              Set flag to also store .pred.txt
+  -l, --lines INTEGER RANGE       Lines per page
+  -ls, --line-spacing INTEGER RANGE
+                                  Spacing between lines in pixel
+  -b, --border INTEGER RANGE...   Border in pixel: top bottom left right
+  --debug [10|20|30|40|50]        Sets the level of feedback to receive:
+                                  DEBUG=10, INFO=20, WARNING=30, ERROR=40,
+                                  CRITICAL=50
+  --threads INTEGER RANGE         Thread count to be used
+  --xml-schema [17|19]            Sets the year of the xml-Schema to be used
+  --help                          Show this message and exit.
+
+```
+
+Please note that each image file has to have the same name as its Ground Truth file.
+```
+foo.nrm.png -> foo.gt.txt (& foo.pred.txt)
+bar.bin.png -> bar.gt.txt (& bar.pred.txt)
+```
+
 #### Regularization
 ```
 Usage: pagetools regularize [OPTIONS] XMLS...
