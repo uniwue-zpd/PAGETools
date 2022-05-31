@@ -2,6 +2,7 @@ import glob
 import logging
 from pathlib import Path
 from datetime import datetime
+from typing import List, Tuple
 
 from lxml import etree
 import cv2
@@ -14,19 +15,19 @@ class Line2Page:
     """
 
     def __init__(self,
-                 creator,
-                 source,
-                 image_folder,
-                 gt_folder,
-                 destination_folder,
-                 ext,
-                 pred,
-                 lines,
-                 spacing,
-                 border,
-                 debug,
-                 threads,
-                 xml_schema):
+                 creator: str,
+                 source: str,
+                 image_folder: str,
+                 gt_folder: str,
+                 destination_folder: str,
+                 ext: str,
+                 pred: str,
+                 lines: int,
+                 spacing: int,
+                 border: Tuple[int],
+                 debug: bool,
+                 threads: int,
+                 xml_schema: str):
         logging.basicConfig(level=int(debug))
         self.log = logging.getLogger(__name__)
 
@@ -82,19 +83,19 @@ class Line2Page:
                        f"XML Schema: {self.xmlSchemaLocation}")
 
     @staticmethod
-    def get_text(file):
+    def get_text(file: str) -> str:
         """Extracts the text from inside the file"""
         with Path(file).open('r') as read_file:
             return read_file.read().rstrip()
 
     @staticmethod
-    def chunks(lst, n):
+    def chunks(lst: list, n: int):
         """Yields successive n-sized chunks from lst"""
         for i in range(0, len(lst), n):
             yield lst[i: i + n]
 
     @staticmethod
-    def name_pages(pages):
+    def name_pages(pages: List[str]) -> List[str]:
         """Returns a list of all objects in pages with pagename followed by a 4-digit pagenumber"""
         page_with_name = []
         pages_with_name = []
