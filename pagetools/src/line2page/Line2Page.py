@@ -95,7 +95,7 @@ class Line2Page:
             yield lst[i: i + n]
 
     @staticmethod
-    def name_pages(pages: List[str]) -> List[str]:
+    def name_pages(pages: List[str]) -> List[List[str]]:
         """Returns a list of all objects in pages with pagename followed by a 4-digit pagenumber"""
         page_with_name = []
         pages_with_name = []
@@ -138,7 +138,7 @@ class Line2Page:
         semaphore.release()
 
     def match_files(self):
-        """Pairs image with gt-Text and adds the pairing to matches"""
+        """Pairs image with GT text and adds the pairing to matches"""
         for img in self.imgList:
             pairing = []
             img_name = Path(img.split('.')[0]).name

@@ -10,22 +10,21 @@ from multiprocessing import Semaphore
 import click
 
 
-@click.command("line2page", help="Links line images and corresponding texts in a page and creates a combined image and "
-                                 "XML-File of each page")
-@click.option('-c', '--creator', type=str, default='user', help='Creator tag for PAGE XML', show_default=True)
+@click.command("line2page", help="Merges line images and line texts into combined images and XML files")
+@click.option('-c', '--creator', type=str, default='PAGETools', help='Creator tag for PAGE XML', show_default=True)
 @click.option('-s', '--source-folder', type=str, required=True, help='Path to images and GT')
 @click.option('-i', '--image-folder', default='', type=str, help='Path to images', show_default=True)
 @click.option('-gt', '--gt-folder', default='', type=str, help='Path to GT', show_default=True)
-@click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), type=str, help='Path to merge objects',
+@click.option('-d', '--dest-folder', default=Path(Path.cwd(), 'merged'), type=str, help='Path where output gets stored',
               show_default=True)
 @click.option('-e', '--ext', default='.bin.png', type=str, help='Image extension', show_default=True)
-@click.option('-p', '--pred', default=False, type=bool, help='Set flag to also store .pred.txt', show_default=True)
+@click.option('-p', '--pred', default=False, is_flag=True, help='Sets flag to also include .pred.txt', show_default=True)
 @click.option('-l', '--lines', default=20, type=click.IntRange(min=0, clamp=True), help='Lines per page',
               show_default=True)
 @click.option('-ls', '--line-spacing', default=5, type=click.IntRange(min=0, clamp=True),
-              help='Spacing between lines in pixel', show_default=True)
+              help='Spacing between lines (in pixel)', show_default=True)
 @click.option('-b', '--border', nargs=4, default=(10, 10, 10, 10), type=click.IntRange(min=0, clamp=True),
-              help='Border in pixel: top bottom left right', show_default=True)
+              help='Border (in pixel): TOP BOTTOM LEFT RIGHT', show_default=True)
 @click.option('--debug', default='20', type=click.Choice(['10', '20', '30', '40', '50']),
               help='Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50',
               show_default=True)
