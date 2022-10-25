@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PAGETools"
+description = "Toolset for performing various operations on PAGE XML datasets."
+readme = "README.md"
+requires-python = ">=3.6"
+authors = [
+    {name = "Maximilian Nöth", email="maximilian.noeth@uni-wuerzburg.de"}
+]
+keywords = ["PAGE XML", "OCR", "optical character recognition"]
+license = {file = "LICENSE.md"}
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "opencv-python",
+    "lxml",
+    "numpy",
+    "click",
+    "flake8",
+    "deskew",
+    "regex",
+    "pytest",
+    "importlib_resources ; python_version<'3.7'",
+]
+dynamic = ["version"]
+
+[project.urls]
+repository = "https://github.com/uniwuezpd/PAGETools"
+
+[project.scripts]
+pagetools = "pagetools.cli: cli"
+
+[options]
+include_package_data = true
+
+[tool.setuptools.packages.find]
+include = ["pagetools"]
+exclude = ["assets"]
+
+[tool.setuptools_scm]
