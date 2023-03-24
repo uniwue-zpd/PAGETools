@@ -6,7 +6,7 @@ import cv2
 
 def background_calc_dispatch_table(mode: str):
     dispatch_table = {
-        "dominant": calc_dominat_color,
+        "dominant": calc_dominant_color,
         "mean": calc_mean_color,
         "median": calc_median_color
     }
@@ -14,7 +14,7 @@ def background_calc_dispatch_table(mode: str):
     return dispatch_table[mode]
 
 
-def calc_dominat_color(img: np.array) -> Tuple[int]:
+def calc_dominant_color(img: np.array) -> Tuple[int]:
     """Calculates the dominant color of an image using bincounts
 
     :param img:
