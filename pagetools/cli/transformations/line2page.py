@@ -71,7 +71,7 @@ def line2page_cli(creator: str,
             processes.append(process)
             process.start()
 
-    with click.progressbar(processes, label=f"Finishing {len(processes)}Pages:") as bar_finishing:
+    with click.progressbar(processes, label=f"Finishing {len(processes)} Pages") as bar_finishing:
         for process in bar_finishing:
             process.join()
 
