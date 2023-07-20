@@ -60,7 +60,7 @@ class Line2Page:
         self.pred_suffix = ".pred.txt"
         self.img_suffix = '.nrm.png'
 
-        self.background_colour = (0, 0, 0)
+        self.background_colour = (255, 255, 255)
         self.colour_channels = 3
         if border[1] > lines:
             footer_size = border[1] - lines
