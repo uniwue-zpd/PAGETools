@@ -34,43 +34,35 @@ Options:
   --include [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to extract (highest
                                   priority).
-
   --exclude [TextRegion|ImageRegion|LineDrawingRegion|GraphicRegion|TableRegion|ChartRegion|MapRegion|SeparatorRegion|MathsRegion|ChemRegion|MusicRegion|AdvertRegion|NoiseRegion|NoiseRegion|UnknownRegion|CustomRegion|TextLine|*]
                                   PAGE XML element types to exclude from
                                   extraction (lowest priority).
-
   --no-text                       Suppresses text extraction.
   -ie, --image-extension TEXT     Extension of image files. Must be in the
                                   same directory as corresponding XML file.
-
+                                  [default: .png]
   -o, --output TEXT               Path where generated files will get saved.
   -e, --enumerate-output          Enumerates output file names instead of
                                   using original names.
-
   -z, --zip-output                Add generated output to zip archive.
   -bg, --background-color INTEGER...
                                   RGB color code used to fill up background.
                                   Used when padding and / or deskewing.
-
+                                  [default: 255, 255, 255]
   --background-mode [median|mean|dominant]
                                   Color calc mode to fill up background
                                   (overwrites -bg / --background-color).
-
   -p, --padding INTEGER...        Padding in pixels around the line image
                                   cutout (top, bottom, left, right).
-
+                                  [default: 0, 0, 0, 0]
   -ad, --auto-deskew              Automatically deskew extracted line images
-                                  (Experimental!).
-
+                                  using a custom algorithm (Experimental!).
   -d, --deskew FLOAT              Angle for manual clockwise rotation of the
-                                  line images.
-
+                                  line images.  [default: 0.0]
   -gt, --gt-index INTEGER         Index of the TextEquiv elements containing
-                                  ground truth.
-
+                                  ground truth.  [default: 0]
   -pred, --pred-index INTEGER     Index of the TextEquiv elements containing
-                                  predicted text.
-
+                                  predicted text.  [default: 1]
   --help                          Show this message and exit.
 ```
 
@@ -88,28 +80,32 @@ Merges line images with corresponding text-files in page-images and page-xml
 ```
 Usage: pagetools line2page [OPTIONS]
 
-  Links line images and corresponding texts in a page and creates a combined
-  image and XML-File of each page
+  Merges line images and line texts into combined images and XML files
 
 Options:
-  -c, --creator TEXT              Creator tag for PAGE XML
+  -c, --creator TEXT              Creator tag for PAGE XML  [default:
+                                  PAGETools]
   -s, --source-folder TEXT        Path to images and GT  [required]
-  -i, --image-folder TEXT         Path to images
-  -gt, --gt-folder TEXT           Path to GT
-  -d, --dest-folder TEXT          Path to merge objects
-  -e, --ext TEXT                  Image extension
-  -p, --pred BOOLEAN              Set flag to also store .pred.txt
-  -l, --lines INTEGER RANGE       Lines per page
+  -i, --image-folder TEXT         Path to images  [default: ]
+  -gt, --gt-folder TEXT           Path to GT  [default: ]
+  -d, --dest-folder TEXT          Path where output gets stored  [default:
+                                  /home/ocr4all/merged]
+  -e, --ext TEXT                  Image extension  [default: .bin.png]
+  -p, --pred                      Sets flag to also include .pred.txt
+                                  [default: False]
+  -l, --lines INTEGER RANGE       Lines per page  [default: 20;x>=0]
   -ls, --line-spacing INTEGER RANGE
-                                  Spacing between lines in pixel
-  -b, --border INTEGER RANGE...   Border in pixel: top bottom left right
+                                  Spacing between lines (in pixel)  [default:
+                                  5;x>=0]
+  -b, --border INTEGER RANGE...   Border (in pixel): TOP BOTTOM LEFT RIGHT
+                                  [default: 10, 10, 10, 10;x>=0]
   --debug [10|20|30|40|50]        Sets the level of feedback to receive:
                                   DEBUG=10, INFO=20, WARNING=30, ERROR=40,
-                                  CRITICAL=50
-  --threads INTEGER RANGE         Thread count to be used
-  --xml-schema [17|19]            Sets the year of the xml-Schema to be used
+                                  CRITICAL=50  [default: 20]
+  --threads INTEGER RANGE         Thread count to be used  [default: 16;x>=1]
+  --xml-schema [2017|2019]        Sets the year of the xml-Schema to be used
+                                  [default: 2019]
   --help                          Show this message and exit.
-
 ```
 
 Please note that each image file has to have the same name as its Ground Truth file.
@@ -138,7 +134,6 @@ Options:
   -s, --safe / -us, --unsafe      Creates backups of original files before
                                   overwriting.
   --help                          Show this message and exit.
-
 ```
 #### Change index
 ```
@@ -160,24 +155,24 @@ Usage: pagetools get-codec [OPTIONS] FILES...
 
 Options:
   -l, --level [region|line|word|glyph]
+                                  [default: line]
   -idx, --index INTEGER           Considers only text from TextEquiv elements
                                   with a certain index.
-
   -mc, --most-common INTEGER      Only prints n most common entries. Shows all
                                   by default.
-
   -o, --output TEXT               File to which results are written.
   -rw, --remove-whitespace
   -of, --output-format [json|csv|txt]
                                   Available result formats.
   -freq, --frequencies            Outputs character frequencies.
+  -nu, --normalize-unicode [NFC|NFD|NFKC|NFKD]
+                                  Normalize unicode for both rules and PAGE
+                                  XML tests.
   --text-output-newline           Inserts new line after every character in
                                   txt output. Only applies when frequencies
                                   aren't output.
-
   --verbose / --silent            Choose between verbose or silent output.
   --help                          Show this message and exit.
-
 ```
 ### Get text count
 ```
