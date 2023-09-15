@@ -34,7 +34,7 @@ dynamic = ["version"]
 repository = "https://github.com/uniwuezpd/PAGETools"
 
 [project.scripts]
-pagetools = "pagetools.cli: cli"
+pagetools = "pagetools.cli:cli"
 
 [options]
 include_package_data = true
