@@ -41,6 +41,6 @@ include_package_data = true
 
 [tool.setuptools.packages.find]
 include = ["pagetools"]
-exclude = ["assets"]
+exclude = ["assets", "docs"]
 
 [tool.setuptools_scm]
