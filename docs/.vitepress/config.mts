@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "PAGETools",
   description: "Documentation for the PAGETools python library",
+  base: '/PAGETools/',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
