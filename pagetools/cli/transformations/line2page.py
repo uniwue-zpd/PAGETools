@@ -86,7 +86,7 @@ import click
               help="Sets the level of feedback to receive: DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50",
               show_default=True)
 @click.option("--threads",
-              default=16,
+              default=1,
               type=click.IntRange(min=1, clamp=True),
               help="Thread count to be used",
               show_default=True)
