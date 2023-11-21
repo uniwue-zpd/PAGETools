@@ -24,7 +24,9 @@ class Line2Page:
                  pred: str,
                  lines: int,
                  spacing: int,
+                 output_extension: str,
                  border: Tuple[int],
+                 background_color: Tuple[int],
                  debug: bool,
                  threads: int,
                  xml_schema: str):
@@ -58,9 +60,9 @@ class Line2Page:
         # Extension strings used
         self.gt_suffix = ".gt.txt"
         self.pred_suffix = ".pred.txt"
-        self.img_suffix = '.nrm.png'
+        self.img_suffix = output_extension if output_extension else ext
 
-        self.background_colour = (255, 255, 255)
+        self.background_colour = background_color
         self.colour_channels = 3
         if border[1] > lines:
             footer_size = border[1] - lines
