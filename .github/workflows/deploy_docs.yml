@@ -48,10 +48,9 @@ jobs:
           yarn run docs:build
           touch .vitepress/dist/.nojekyll
       - name: Upload artifact
-        working-directory: ./docs
         uses: actions/upload-pages-artifact@v2
         with:
-          path: .vitepress/dist
+          path: ./docs/.vitepress/dist
 
   # Deployment job
   deploy:
