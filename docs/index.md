@@ -12,7 +12,7 @@ hero:
       link: /installation
     - theme: alt
       text: Tools
-      link: /tools
+      link: /tools/
 
 features:
   - title: Analytics
