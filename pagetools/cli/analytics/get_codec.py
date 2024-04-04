@@ -102,7 +102,7 @@ def serialize(codec: dict, output, out_format: str, freq: bool, text_output_newl
     elif out_format == "csv":
         header = ["character", "frequency"]
 
-        with open(output, "w") as outfile:
+        with open(output, "w", encoding="utf-8") as outfile:
             csv_writer = csv.writer(outfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
             csv_writer.writerow(header)
             for row in codec:
