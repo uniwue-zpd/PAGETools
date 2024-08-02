@@ -62,7 +62,7 @@ class Line2Page:
         self.pred_suffix = ".pred.txt"
         self.img_suffix = output_extension if output_extension else ext
 
-        self.background_colour = background_color
+        self.background_colour = tuple(reversed(background_color))
         self.colour_channels = 3
         if border[1] > lines:
             footer_size = border[1] - lines
